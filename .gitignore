@@ -1,0 +1,33 @@
+# ---- DATA: unpublished -- NEVER commit or push ---------------------------
+# Everything inside data/ is ignored except the README.
+data/*
+!data/README.md
+# Just in case someone puts data files elsewhere:
+*.xlsx
+*.xls
+*.parquet
+*.h5ad
+*.rds
+*.RData
+*.rda
+*.tsv.gz
+*.csv.gz
+combined_site*.tsv
+*.fasta
+*.gff
+
+# ---- Rendered notebooks (contain data in tables/plots) -------------------
+analyses/_output/
+analyses/*_files/
+analyses/*.html
+analyses/.quarto/
+.quarto/
+notebook/**/*.html
+
+# ---- R / RStudio / OS ------------------------------------------------------
+.Rhistory
+.Rproj.user/
+.Renviron
+renv/library/
+renv/staging/
+.DS_Store
