@@ -7,8 +7,9 @@ along the way. Use it carefully (see below).
 
 Lecturer: Jonas Grossmann (Functional Genomics Center Zurich, FGCZ).
 
-> **The data are not in this repository and must never be uploaded anywhere**
-> (GitHub, cloud drives, chatbots that store uploads …). See [data/README.md](data/README.md).
+> **The data are not in this repository and must not be uploaded anywhere else**
+> (GitHub, cloud drives, other chatbots …). Using them with the course's Claude Code
+> agent is allowed. See [data/README.md](data/README.md).
 
 ## Biology in 10 lines
 
@@ -114,9 +115,11 @@ a topic as a group and copy 06.
 
 You're encouraged to use an agent (Claude Code, Copilot, Cursor …). Some rules:
 
-1. **Data stay local.** Never paste or upload data tables, Excel files or rendered
-   reports to a chatbot or web service. The agent may read files on your laptop
-   to write code, and that's it. `CLAUDE.md` tells the agent the same.
+1. **Real data with Claude Code: yes. Anywhere else: no.** The lecturer has cleared
+   the course data for use with Claude Code, so the agent may read and analyse the
+   files in `data/` directly. Don't upload data tables, Excel files or rendered
+   reports to any other chatbot or web service, or to a public repository.
+   `CLAUDE.md` tells the agent the same.
 2. **You are responsible for every line.** Ask the agent to explain code you don't
    understand. Run it, look at the output, and check one number by hand.
 3. **Plot the raw values first.** Before you believe a fold change, look at

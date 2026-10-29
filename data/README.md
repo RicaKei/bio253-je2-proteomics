@@ -2,7 +2,8 @@
 
 The data are **unpublished**. Everything in this folder except this README is
 git-ignored. Do not remove those lines from `.gitignore`, and never upload the files
-anywhere (GitHub, cloud storage, chatbots).
+anywhere else (GitHub, cloud storage, other chatbots). Analysing them with the course's
+Claude Code agent is allowed.
 
 ## How to get the data
 
