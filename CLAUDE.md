@@ -6,13 +6,13 @@ use small steps and short code, and explain *why*.
 
 ## Hard rules
 
-1. **Work on the real data, but keep it in the course.** The lecturer has cleared
-   the course data for use with Claude Code: you may read, analyse and summarise
-   the files in `data/` directly. Prefer running scripts over printing large
-   tables. The data are still unpublished: do not send them (or rendered reports)
-   to any *other* web service, API, paste site, gist or remote repository. Do not `git add` anything
-   under `data/` or `analyses/_output/`. Never `git push` unless the student
-   explicitly asks, and never to a public repository.
+1. **Work on the real data; publish code and reports, never the raw data.** The
+   lecturer allows any AI tool on the course data: read, analyse and summarise the
+   files in `data/` directly (prefer running scripts over printing large tables).
+   At the end the group pushes its **code and rendered reports** to its own GitHub
+   repository (a clone of the starter repo) — help with that when asked. Never
+   `git add` anything under `data/` (raw Excel/TSV/parquet/FASTA files); keep
+   `.gitignore` intact.
 2. **Use R** (tidyverse, ggplot2, limma). Do not switch to Python. Start scripts
    and notebooks with `source("R/setup.R")` (or `source("../R/setup.R")` from
    `analyses/`) and reuse the helpers in `R/`.

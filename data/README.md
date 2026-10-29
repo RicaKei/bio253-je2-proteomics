@@ -1,9 +1,9 @@
 # data/ – local only, never committed
 
 The data are **unpublished**. Everything in this folder except this README is
-git-ignored. Do not remove those lines from `.gitignore`, and never upload the files
-anywhere else (GitHub, cloud storage, other chatbots). Analysing them with the course's
-Claude Code agent is allowed.
+git-ignored. Do not remove those lines from `.gitignore`: the raw files never go to
+GitHub (they are unpublished, and too large anyway). Your code and rendered reports do.
+Any AI tool may be used to analyse them.
 
 ## How to get the data
 

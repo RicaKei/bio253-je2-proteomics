@@ -7,9 +7,9 @@ along the way. Use it carefully (see below).
 
 Lecturer: Jonas Grossmann (Functional Genomics Center Zurich, FGCZ).
 
-> **The data are not in this repository and must not be uploaded anywhere else**
-> (GitHub, cloud drives, other chatbots …). Using them with the course's Claude Code
-> agent is allowed. See [data/README.md](data/README.md).
+> **The raw data are not in this repository and are never committed** (see
+> [data/README.md](data/README.md)). Your code and rendered reports are — you hand in
+> your work by pushing your clone of this repo to GitHub (see *Handing in*).
 
 ## Biology in 10 lines
 
@@ -111,15 +111,30 @@ a topic as a group and copy 06.
 * Is there a fast phospho-response in SNpulse when the proteome hardly changes?
 * Correct phospho-site changes for changes in protein amount.
 
+## Handing in: your repo on GitHub
+
+Each group works in its own clone of this starter repo and hands in by pushing it to GitHub.
+
+```bash
+git clone <starter-repo-url> bio253-<group>      # or use "Use this template" / fork on GitHub
+cd bio253-<group>
+# ... work, commit small steps ...
+git remote set-url origin https://github.com/<you>/bio253-<group>.git   # your own repo
+git push -u origin main
+```
+
+What goes in: all code (`R/`, `scripts/`, `analyses/*.qmd`, your own `reports/`), the rendered
+HTML reports (`analyses/_output/`, `reports/*.html`), and `notebook/`.
+What stays out: everything in `data/` (raw Excel/TSV/parquet/FASTA — `.gitignore` takes care of it).
+Before the final push run `git status` and check that no data file is staged.
+
 ## Working with an AI coding agent – responsibly
 
 You're encouraged to use an agent (Claude Code, Copilot, Cursor …). Some rules:
 
-1. **Real data with Claude Code: yes. Anywhere else: no.** The lecturer has cleared
-   the course data for use with Claude Code, so the agent may read and analyse the
-   files in `data/` directly. Don't upload data tables, Excel files or rendered
-   reports to any other chatbot or web service, or to a public repository.
-   `CLAUDE.md` tells the agent the same.
+1. **Use whatever AI tools help you** (Claude Code, Codex, Cursor, Copilot, chat
+   assistants …), directly on the course data. Just never commit the raw files in
+   `data/`. `CLAUDE.md` / `AGENTS.md` tell the agents the same.
 2. **You are responsible for every line.** Ask the agent to explain code you don't
    understand. Run it, look at the output, and check one number by hand.
 3. **Plot the raw values first.** Before you believe a fold change, look at

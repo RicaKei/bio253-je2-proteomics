@@ -16,13 +16,11 @@ combined_site*.tsv
 *.fasta
 *.gff
 
-# ---- Rendered notebooks (contain data in tables/plots) -------------------
-analyses/_output/
+# ---- Quarto caches (rendered reports themselves ARE committed) -----------
 analyses/*_files/
-analyses/*.html
 analyses/.quarto/
 .quarto/
-notebook/**/*.html
+reports/*_files/
 
 # ---- R / RStudio / OS ------------------------------------------------------
 .Rhistory
