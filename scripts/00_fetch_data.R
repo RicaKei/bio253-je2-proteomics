@@ -13,9 +13,9 @@
 # The data are UNPUBLISHED. data/raw/ and data/derived/ are git-ignored:
 # never commit them, never upload them anywhere.
 
-DEFAULT_SOURCE <- file.path(
-  "/Users/jonasgrossmann/FGCZ/Interdisziplinar/p43205_Bio253_HS2026",
-  "SA_phospho_forStudents/Oct_2026_Focus_JE2_Bio253/SAJE2")
+# Default: the course folder's SAJE2/, two levels above the repository root
+# (lecturer layout: <course>/gh_starter_pack_repos/bio253-je2-proteomics/).
+DEFAULT_SOURCE <- file.path("..", "..", "SAJE2")
 
 args <- commandArgs(trailingOnly = TRUE)
 use_links <- "--link" %in% args

@@ -27,7 +27,7 @@ find_repo_root <- function(start = getwd()) {
     parent <- dirname(dir)
     if (parent == dir) {
       stop("Could not find the repository root. ",
-           "Run this from inside the bio253-je2-proteomics-starter folder.")
+           "Run this from inside the bio253-je2-proteomics folder.")
     }
     dir <- parent
   }

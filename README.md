@@ -5,7 +5,7 @@ Starter code for the Bio253 block course (UZH, HS2026). You work in small groups
 JE2. You'll formulate hypotheses, test them in R, and use an AI coding agent
 along the way. Use it carefully (see below).
 
-Lecturer: Jonas Grossmann (Functional Genomics Center Zurich, FGCZ).
+Lecturer: Jonas Grossmann and José Luis Ruiz Rodriguez (Functional Genomics Center Zurich, FGCZ).
 
 > **The raw data are not in this repository and are never committed** (see
 > [data/README.md](data/README.md)). Your code and rendered reports are — you hand in
@@ -56,7 +56,7 @@ the README, the checksum file and the check scripts is git-ignored and never pus
 
 ```bash
 git clone <this repo>   # or unzip the folder you got
-cd bio253-je2-proteomics-starter
+cd bio253-je2-proteomics
 Rscript install_packages.R              # once
 unzip /path/to/bio253_je2_data.zip -d data   # extract the course data zip into data/
 bash data/check_data.sh                 # all files must be OK
@@ -64,7 +64,7 @@ Rscript tests/run_tests.R               # should end with "DONE" and no failures
 cd analyses && quarto render            # renders all notebooks to analyses/_output/
 ```
 
-In R / RStudio (open `bio253-je2-proteomics-starter.Rproj`):
+In R / RStudio (open `bio253-je2-proteomics.Rproj`):
 
 ```r
 source("R/setup.R")
