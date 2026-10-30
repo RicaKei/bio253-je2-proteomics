@@ -1,0 +1,14 @@
+# Settings for your group's final report(s): same look as the analyses (FGCZ banner, TOC).
+execute:
+  echo: true
+  warning: false
+  message: false
+
+format:
+  html:
+    toc: true
+    code-fold: show
+    embed-resources: true
+    include-before-body:
+      - ../analyses/assets/fgcz_header_quarto.html
+      - ../analyses/assets/fgcz_banner_override.html
