@@ -2,6 +2,9 @@
 # Everything inside data/ is ignored except the README.
 data/*
 !data/README.md
+!data/checksums.md5
+!data/check_data.sh
+!data/check_data.R
 # Just in case someone puts data files elsewhere:
 *.xlsx
 *.xls

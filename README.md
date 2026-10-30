@@ -43,16 +43,14 @@ If in doubt, run `explain_contrast("TSB_vs_SN_at_anc")`.
 
 ## Getting the data
 
-You get the data folder (`SAJE2/`) from the lecturer through the course share. Do not
-put it inside this repository. Then run, from the repository root:
+The data are **not** in this repository. You get them from the lecturer as **one zip file**.
 
-```bash
-Rscript scripts/00_fetch_data.R /path/to/SAJE2
-# or: export BIO253_DATA_DIR=/path/to/SAJE2; Rscript scripts/00_fetch_data.R
-```
+1. Extract it into the `data/` folder of your clone (you then have `data/raw/`, `data/derived/`, `data/reference/`).
+2. Verify all files against the MD5 checksums in `data/checksums.md5`:
+   `bash data/check_data.sh` (macOS/Linux) or `Rscript data/check_data.R` (Windows). Every file must say `OK`.
 
-This copies the needed files to `data/raw/` and writes tidy tables to
-`data/derived/` (takes about 20 s, ~150 MB). Both folders are git-ignored.
+Details and troubleshooting: [data/README.md](data/README.md). Everything in `data/` except
+the README, the checksum file and the check scripts is git-ignored and never pushed.
 
 ## Quick start
 
@@ -60,7 +58,8 @@ This copies the needed files to `data/raw/` and writes tidy tables to
 git clone <this repo>   # or unzip the folder you got
 cd bio253-je2-proteomics-starter
 Rscript install_packages.R              # once
-Rscript scripts/00_fetch_data.R /path/to/SAJE2
+unzip /path/to/bio253_je2_data.zip -d data   # extract the course data zip into data/
+bash data/check_data.sh                 # all files must be OK
 Rscript tests/run_tests.R               # should end with "DONE" and no failures
 cd analyses && quarto render            # renders all notebooks to analyses/_output/
 ```
@@ -81,7 +80,8 @@ sites <- read_sites("STYH")                 # FragPipe phospho-sites, long forma
 | path | what |
 |---|---|
 | `R/` | helper functions, loaded with `source("R/setup.R")` |
-| `scripts/00_fetch_data.R` | copies the data in and writes tidy tables |
+| `scripts/00_fetch_data.R` | lecturer only: rebuilds `data/` from the original course folder |
+| `data/checksums.md5`, `data/check_data.sh/.R` | MD5 check of everything extracted from the course data zip |
 | `analyses/` | exercise notebooks (Quarto, R) |
 | `notebook/` | **your** lab notebook: one dated entry per session |
 | `tests/` | `testthat` checks of the helpers and of the sign convention |

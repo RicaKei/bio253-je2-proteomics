@@ -1,21 +1,43 @@
 # data/ – local only, never committed
 
-The data are **unpublished**. Everything in this folder except this README is
-git-ignored. Do not remove those lines from `.gitignore`: the raw files never go to
-GitHub (they are unpublished, and too large anyway). Your code and rendered reports do.
-Any AI tool may be used to analyse them.
+The data are **unpublished**. Everything in this folder except this README, the
+checksum file and the two check scripts is git-ignored. Do not remove those lines from
+`.gitignore`: the data files never go to GitHub (they are unpublished, and too large
+anyway). Your code and rendered reports do. Any AI tool may be used to analyse them.
 
 ## How to get the data
 
-1. Get the course data folder `SAJE2/` from the lecturer (course share).
-2. From the repository root, run:
+The data are **not** in this repository. The lecturer distributes them as **one zip file**.
+
+1. **Extract** the zip into this `data/` folder. Afterwards you have `data/raw/`,
+   `data/derived/` and `data/reference/` next to this README (see *What you get* below).
+2. **Check the files** with the MD5 checksums in [`checksums.md5`](checksums.md5)
+   (run from the repository root):
 
    ```bash
-   Rscript scripts/00_fetch_data.R /path/to/SAJE2          # copies (~135 MB)
-   Rscript scripts/00_fetch_data.R /path/to/SAJE2 --link   # symlinks instead of copies
+   bash data/check_data.sh          # macOS / Linux
+   Rscript data/check_data.R        # Windows, or anywhere R is installed
    ```
 
-   You can also set the environment variable `BIO253_DATA_DIR=/path/to/SAJE2`.
+   Every file should say `OK`, and the last line `Data check passed.`
+   * `MISSING`: a file is not where it should be. Did you extract into `data/`, and not into
+     `data/<zip name>/`?
+   * `CORRUPT`: the file differs from the lecturer's version (incomplete download, broken
+     extraction, or the file was edited). Download and extract again.
+
+   Experts can also run `cd data && md5sum -c checksums.md5` directly.
+
+That's it: the tidy tables in `data/derived/` are already included, and you can start with
+`analyses/01_explore_data.qmd`. If something looks odd later, run the check again: if it
+passes, the problem is in the code, not in the data. Never edit files in `data/`; write
+your own results elsewhere (e.g. `results/`).
+
+*For the lecturer:* the zip is built from this folder with
+`zip -r bio253_je2_data.zip raw derived reference -x '*.DS_Store'` (run inside `data/`).
+If any data file changes, regenerate the checksums with
+`find raw derived reference -type f ! -name .DS_Store | LC_ALL=C sort | xargs md5sum > checksums.md5`
+and commit the new `checksums.md5`. `scripts/00_fetch_data.R` rebuilds `raw/` and `derived/`
+from the original course folder.
 
 ## What you get
 
