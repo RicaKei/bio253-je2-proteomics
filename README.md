@@ -11,7 +11,7 @@ Lecturer: Jonas Grossmann and José Luis Ruiz Rodriguez (Functional Genomics Cen
 > [data/README.md](data/README.md)). Your code and rendered reports are — you hand in
 > your work by pushing your clone of this repo to GitHub (see *Handing in*).
 
-## Biology in 10 lines
+## Biology in 10 lines or even more
 
 1. *S. aureus* and *Pseudomonas aeruginosa* often co-infect, e.g. in cystic fibrosis lungs. *P. aeruginosa* usually suppresses *S. aureus* with secreted molecules (HQNO, PQS, pyocyanin, siderophores, proteases …).
 2. In this experiment, *S. aureus* **never meets living *P. aeruginosa***. It is grown in medium containing **30 % cell-free, sterile-filtered spent medium of *P. aeruginosa* PAO1** ("PA supernatant", **PASN**). It sees only the secreted molecules, in a medium that is partly depleted of nutrients.
