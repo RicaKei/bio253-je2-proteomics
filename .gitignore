@@ -19,7 +19,11 @@ combined_site*.tsv
 *.fasta
 *.gff
 
-# ---- Quarto caches (rendered reports themselves ARE committed) -----------
+# ---- Rendered exercise notebooks and Quarto caches ------------------------
+# analyses/_output/ holds the WORKED exercise notebooks -- never commit those,
+# they give the answers away. Your own final report goes in reports/ and IS
+# committed (see "Handing in" in README.md).
+analyses/_output/
 analyses/*_files/
 analyses/.quarto/
 .quarto/

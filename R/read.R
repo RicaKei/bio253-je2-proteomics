@@ -89,6 +89,24 @@ read_sites <- function(search = "STYH", drop_contaminants = TRUE) {
   add_annotation(as_design_factors(x))
 }
 
+#' Peptide-level evidence for the total proteome (one row per peptide x sample).
+#'
+#' This is the table the DEA was built from, BEFORE peptides were rolled up
+#' into protein values. Use it when you need to know WHICH PART of a protein
+#' was actually seen -- for example on either side of a transposon insertion
+#' (notebook 07).
+#'
+#' Columns: peptide, protein_start / protein_end (position of the peptide in
+#' the protein), intensity (NA = not detected in that sample), plus the usual
+#' sample / genotype / medium / replicate columns.
+#' Note that `peptide` still carries modification tags like "M[15.9949]"; the
+#' column `peptide_plain` has them stripped.
+read_peptides <- function(drop_contaminants = TRUE) {
+  x <- read_tsv(check_derived("peptides_total.tsv.gz"), show_col_types = FALSE)
+  if (drop_contaminants) x <- filter(x, !is_contaminant)
+  add_annotation(as_design_factors(x))
+}
+
 #' Sample sheet: one row per sample with genotype, medium, replicate.
 read_samples <- function() {
   as_design_factors(read_tsv(check_derived("samples.tsv"), show_col_types = FALSE))
