@@ -18,6 +18,8 @@ data/*
 combined_site*.tsv
 *.fasta
 *.gff
+# ...but reference/ holds small PUBLIC sequences (ErmB), not course data:
+!reference/*.fasta
 
 # ---- Rendered exercise notebooks and Quarto caches ------------------------
 # analyses/_output/ holds the WORKED exercise notebooks -- never commit those,
