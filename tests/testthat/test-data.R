@@ -87,3 +87,19 @@ test_that("peptide table resolves the transposon truncation of Stp1", {
   expect_gt(sum(far$genotype == "anc"), 10)
   expect_equal(sum(far$genotype == "stp"), 0)
 })
+
+test_that("protein metadata ships with the repo and maps to UniProt", {
+  meta <- read_protein_metadata()
+  expect_equal(nrow(meta), 4155L)
+  expect_false(any(duplicated(meta$protein_key)))
+  expect_setequal(unique(meta$entry_class),
+                  c("cds", "pseudo_frameshift_translation", "contaminant", "database_info"))
+  cds <- read_protein_metadata(cds_only = TRUE)
+  expect_equal(nrow(cds), 2938L)
+  expect_gt(sum(!is.na(cds$uniprot_acc)), 2800)
+  # Stk1: the BLASTORTHO ortholog of B7H15_06355 in NCTC 8325
+  stk1 <- filter(cds, locus_tag == "B7H15_06355")
+  expect_equal(stk1$uniprot_acc, "Q2FZ64")
+  expect_equal(stk1$blastortho_evalue, 0)
+  expect_equal(stk1$ortholog_quality, "good")
+})

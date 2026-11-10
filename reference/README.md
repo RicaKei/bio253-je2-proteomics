@@ -1,4 +1,18 @@
-# reference/ – proposal: extend the search database
+# reference/ – public reference data
+
+Two independent things live here:
+
+1. **Protein metadata for the whole search database** —
+   `JE2_protein_metadata.tsv.gz` (4,155 proteins x 80 columns) and
+   `JE2_protein_terms.tsv.gz`. Locus tag, product, genome position, **UniProt
+   accession + BLAST e-value**, gene symbol, EC number, GO / KEGG / STRING
+   annotation. Load with `read_protein_metadata()`. Full column documentation:
+   [README_protein_metadata.md](README_protein_metadata.md); the script that
+   builds it is `make_protein_metadata.R` (it runs in the lecturer's resource
+   folder, where the FASTA, GFF and STRING exports live).
+2. **A proposal to extend the search FASTA** with ErmB — the rest of this file.
+
+## Extending the search database
 
 Small, public reference sequences. Unlike `data/`, this folder **is** committed:
 nothing here is unpublished course data.

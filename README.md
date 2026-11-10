@@ -83,7 +83,7 @@ sites <- read_sites("STYH")                 # FragPipe phospho-sites, long forma
 | `scripts/00_fetch_data.R` | lecturer only: rebuilds `data/` from the original course folder |
 | `data/checksums.md5`, `data/check_data.sh/.R` | MD5 check of everything extracted from the course data zip |
 | `analyses/` | exercise notebooks (Quarto, R) |
-| `reference/` | small public reference sequences (ErmB) + the proposal to extend the search database |
+| `reference/` | **protein metadata for all 4,155 database entries** (UniProt accession + e-value, gene symbol, EC, GO/KEGG/STRING) + the ErmB proposal |
 | `notebook/` | **your** lab notebook: one dated entry per session |
 | `tests/` | `testthat` checks of the helpers and of the sign convention |
 | `data/` | local data only (git-ignored), see `data/README.md` |
