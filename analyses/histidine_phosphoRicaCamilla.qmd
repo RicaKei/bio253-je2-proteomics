@@ -269,6 +269,71 @@ my_tiers |>
 
 ```
 
+according to  String, they are not linked in any way. They don't belong to an obvious pathway.
+
+## 6.1 is it random (histidine kinase annotated proteins)?
+Possible histidine kinase annotated proteins (genome wide)
+
+```{r}
+find_protein("histidine kinase") |>
+  select(locus_tag, product)
+
+```
+
+found in the dataset styh sites
+```{r}
+tcs <- find_protein("histidine kinase") |>
+  select(locus_tag, product)
+
+styh |>
+  distinct(locus_tag) |>
+  inner_join(tcs, by = "locus_tag")
+```
+
+
+Following a test is the phosphorilisation is random or not on histidine kinase annotated proteins(Fisher Test).
+```{r}
+##  define TCS-proteines 
+tcs <- find_protein("histidine kinase") |>
+  select(locus_tag) |>
+  distinct()
+
+## All proteins
+all_proteins <- styh |>
+  select(locus_tag) |>
+  distinct() |>
+  mutate(
+    TCS = locus_tag %in% tcs$locus_tag
+  )
+
+## Proteines with at least one pHis
+his_proteins <- his |>
+  select(locus_tag) |>
+  distinct() |>
+  mutate(has_pHis = TRUE)
+
+## put together
+protein_tbl <- all_proteins |>
+  left_join(his_proteins, by = "locus_tag") |>
+  mutate(
+    has_pHis = ifelse(is.na(has_pHis), FALSE, has_pHis)
+  )
+
+## 2x2-table
+tab <- table(
+  protein_tbl$TCS,
+  protein_tbl$has_pHis
+)
+
+tab
+
+## Fisher Exact Test
+fisher.test(tab)
+
+```
+Six proteins annotated as histidine kinases (TCS proteins) were identified in the dataset. None contained a detected histidine phosphosite. Consequently, the estimated odds ratio was 0. However, Fisher's exact test did not indicate a significant association between TCS membership and the occurrence of histidine phosphosites (p = 0.193). Not really valuable because only very few histidine kinase annotated proteins detected.
+
+
 
 ## 7. Real or artefact? A decision framework
 
