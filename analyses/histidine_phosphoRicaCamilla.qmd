@@ -217,6 +217,32 @@ my_tiers <- his |>
       no_alt_acceptor ~ "5 weak",
       TRUE ~ "6 unreliable"))
 count(my_tiers, tier)
+
+#add plot
+
+my_tiers |>
+  count(tier) |>
+  mutate(tier = factor(
+    tier,
+    levels = c(
+      "1 strongest",
+      "2 very strong",
+      "3 strong",
+      "4 moderate",
+      "5 weak",
+      "6 unreliable"
+    )
+  )) |>
+  ggplot(aes(tier, n)) +
+  geom_col() +
+   geom_col(fill = "midnightblue") +
+  labs(
+    x = "Tier",
+    y = "Number of sites",
+    title = "His-site confidence tiers"
+  ) + 
+  theme_minimal()
+
 ```
 
 Check your tiers against the lecturer's reference (counts only – it tells you
