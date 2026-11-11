@@ -200,15 +200,22 @@ Write your tiers below (set `eval: true` once you filled in the conditions).
 Number tiers 1 (strongest) to 6 (weakest) and **start every label with the number**.
 
 ```{r my-tiers}
-#| eval: false
+#| eval: true
 my_tiers <- his |>
-  mutate(tier = case_when(
-    no_alt_acceptor & best_loc_prob >= 0.75 & max_reps_in_group >= 2 & !seen_in_STY_search  ~ "1 strongest: ...",
-    no_alt_acceptor & best_loc_prob >= 0.75 & max_reps_in_group >= 2           ~ "2 ...",
-    no_alt_acceptor & best_loc_prob >= 0.75                  ~ "3 ...",
-    max_reps_in_group >= 2 & !seen_in_STY_search       ~ "4 ...",
-    no_alt_acceptor                             ~ "5 ...",
-    TRUE                               ~ "6 unreliable"))
+  mutate(
+    tier = case_when(
+      no_alt_acceptor &
+        best_loc_prob >= 0.75 &
+        max_reps_in_group >= 2 &
+        !seen_in_STY_search ~ "1 strongest",
+      best_loc_prob >= 0.75 &
+        max_reps_in_group >= 2 &
+        !seen_in_STY_search ~ "2 very strong",
+      no_alt_acceptor &
+        best_loc_prob >= 0.75 ~ "3 strong",
+      best_loc_prob >= 0.75 ~ "4 moderate",
+      no_alt_acceptor ~ "5 weak",
+      TRUE ~ "6 unreliable"))
 count(my_tiers, tier)
 ```
 
@@ -216,7 +223,7 @@ Check your tiers against the lecturer's reference (counts only – it tells you
 *how many* sites agree, not *which*):
 
 ```{r check}
-#| eval: false
+#| eval: TRUE
 check_his_tiers(my_tiers)
 ```
 
