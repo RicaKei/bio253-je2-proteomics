@@ -39,6 +39,15 @@ bind_rows(styh, sty) |>
   distinct(search, site_id, residue) |>
   count(search, residue) |>
   pivot_wider(names_from = search, values_from = n, values_fill = 0)
+
+bind_rows(styh, sty) |>
+  distinct(search, site_id, residue) |>
+  count(search, residue) |>
+  ggplot(aes(x = residue, y = n, fill = search)) +
+  geom_col(position = position_dodge2(width = 0.9, preserve = "single")) +
+  scale_fill_manual(values = c("STY" = "midnightblue","STYH" = 'darkred')) +
+  labs(x = "Residue", y = "Number of sites", fill = "Search") +
+  theme_minimal()
 ```
 
 **Question:** the STYH search finds more sites in total. Are the additional sites
@@ -254,7 +263,9 @@ check_his_tiers(my_tiers)
 ```
 
 Which are the strongest sites? 
-The following sites fullfil all criteria of the strongest confidence tier: no alternative S/T/Y acceptor, localisation probability ≥ 0.75, reproducible detection (≥ 2 replicates in one group), and not explained by the STY search (are located in tier 1).
+The following sites fullfil all criteria of the strongest confidence tier: no alternative S/T/Y acceptor, localisation
+probability ≥ 0.75, reproducible detection (≥ 2 replicates in one group), and not explained by the STY search (are located
+in tier 1).
 
 ```{r}
 my_tiers |>
@@ -331,7 +342,10 @@ tab
 fisher.test(tab)
 
 ```
-Six proteins annotated as histidine kinases (TCS proteins) were identified in the dataset. None contained a detected histidine phosphosite. Consequently, the estimated odds ratio was 0. However, Fisher's exact test did not indicate a significant association between TCS membership and the occurrence of histidine phosphosites (p = 0.193). Not really valuable because only very few histidine kinase annotated proteins detected.
+Six proteins annotated as histidine kinases (TCS proteins) were identified in the dataset. None contained a detected
+histidine phosphosite. Consequently, the estimated odds ratio was 0. However, Fisher's exact test did not indicate a
+significant association between TCS membership and the occurrence of histidine phosphosites (p = 0.193). Not really valuable
+because only very few histidine kinase annotated proteins detected.
 
 
 
