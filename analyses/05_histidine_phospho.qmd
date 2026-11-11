@@ -203,11 +203,11 @@ Number tiers 1 (strongest) to 6 (weakest) and **start every label with the numbe
 #| eval: false
 my_tiers <- his |>
   mutate(tier = case_when(
-    no_alt_acceptor & ______ & ______  ~ "1 strongest: ...",
-    no_alt_acceptor & ______           ~ "2 ...",
-    no_alt_acceptor                    ~ "3 ...",
-    ______ & !seen_in_STY_search       ~ "4 ...",
-    ______                             ~ "5 ...",
+    no_alt_acceptor & best_loc_prob >= 0.75 & max_reps_in_group >= 2 & !seen_in_STY_search  ~ "1 strongest: ...",
+    no_alt_acceptor & best_loc_prob >= 0.75 & max_reps_in_group >= 2           ~ "2 ...",
+    no_alt_acceptor & best_loc_prob >= 0.75                  ~ "3 ...",
+    max_reps_in_group >= 2 & !seen_in_STY_search       ~ "4 ...",
+    no_alt_acceptor                             ~ "5 ...",
     TRUE                               ~ "6 unreliable"))
 count(my_tiers, tier)
 ```
