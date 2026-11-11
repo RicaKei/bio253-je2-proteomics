@@ -227,6 +227,23 @@ Check your tiers against the lecturer's reference (counts only – it tells you
 check_his_tiers(my_tiers)
 ```
 
+Which are the strongest sites? 
+The following sites fullfil all criteria of the strongest confidence tier: no alternative S/T/Y acceptor, localisation probability ≥ 0.75, reproducible detection (≥ 2 replicates in one group), and not explained by the STY search (are located in tier 1).
+
+```{r}
+my_tiers |>
+  filter(tier == "1 strongest") |>
+  select(
+    site_id,
+    locus_tag,
+    product,
+    peptide,
+    best_loc_prob,
+    max_reps_in_group)
+
+```
+
+
 ## 7. Real or artefact? A decision framework
 
 For each candidate, go through this list and write your verdict in your lab notebook.
