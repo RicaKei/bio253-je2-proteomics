@@ -1,10 +1,17 @@
+install.packages('here')
+
 
 library(dplyr)
 library(readr)
 library(ggplot2)
 
 # 1. Read your original STYH dataset
-data <- read_tsv("C:\\Users\\Rica\\Documents\\UZH\\Bio253\\bio253-je2-proteomics\\Camilla_Rica\\combined_site_STYH.tsv")
+#data <- read_tsv("C:\\Users\\Rica\\Documents\\UZH\\Bio253\\bio253-je2-proteomics\\Camilla_Rica\\combined_site_STYH.tsv")
+
+library(here)
+source(here("R", "setup.R"))
+data <- read_tsv(
+  here("Camilla_Rica", "combined_site_STYH.tsv"))
 
 # 2. Find all lowercase h and exclude contaminants
 his_all <- data %>%

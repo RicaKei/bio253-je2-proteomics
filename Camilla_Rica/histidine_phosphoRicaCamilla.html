@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>05 – Does S. aureus phosphorylate histidine?</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="histidine_phosphoRicaCamilla_files/libs/clipboard/clipboard.min.js"></script>
+<script src="histidine_phosphoRicaCamilla_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="histidine_phosphoRicaCamilla_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="histidine_phosphoRicaCamilla_files/libs/quarto-html/popper.min.js"></script>
+<script src="histidine_phosphoRicaCamilla_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="histidine_phosphoRicaCamilla_files/libs/quarto-html/anchor.min.js"></script>
+<link href="histidine_phosphoRicaCamilla_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="histidine_phosphoRicaCamilla_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="histidine_phosphoRicaCamilla_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="histidine_phosphoRicaCamilla_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="histidine_phosphoRicaCamilla_files/libs/bootstrap/bootstrap-215b371544c282197b31c8aa00ce3677.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
+</head>
+
+<body class="fullcontent quarto-light">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">05 – Does S. aureus phosphorylate histidine?</h1>
+<p class="subtitle lead">Bio253 HS2026 · STY vs STYH search, judged conservatively</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p><strong>Claim to test:</strong> Prust <em>et al.</em> 2021 (<em>Mol Cell Proteomics</em> 20:100034) report that ~8 % of all <em>S. aureus</em> phospho-sites are on <strong>histidine</strong> (pHis). Can we see pHis in our data – and how sure can we be?</p>
+<p>The raw files were searched twice:</p>
+<ul>
+<li><strong>STY</strong> – phosphorylation allowed on Ser, Thr, Tyr</li>
+<li><strong>STYH</strong> – additionally on His</li>
+</ul>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Important</span>Be sceptical – on purpose
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li>pHis is <strong>acid-labile</strong>. Our workflow (Fe-IMAC enrichment, acidic LC) is not pHis-friendly, so many pHis may be lost – and the ones we “see” need extra scrutiny.</li>
+<li>The main source of false pHis is <strong>mis-localisation</strong>: if a peptide also contains S, T or Y, the search engine may put the phosphate on H although it sits on a neighbour – or the other way round.</li>
+<li>Allowing H as an extra acceptor makes the search space bigger, which by itself creates some extra (false) hits.</li>
+</ul>
+<p>We therefore treat pHis <strong>very conservatively</strong>. You will build evidence tiers yourself.</p>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/setup.R"</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># keep contaminants here: we want the complete peptide lists of both searches</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>styh <span class="ot">&lt;-</span> <span class="fu">read_sites</span>(<span class="st">"STYH"</span>, <span class="at">drop_contaminants =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sty  <span class="ot">&lt;-</span> <span class="fu">read_sites</span>(<span class="st">"STY"</span>,  <span class="at">drop_contaminants =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<section id="how-many-sites-per-residue-in-the-two-searches" class="level2">
+<h2 class="anchored" data-anchor-id="how-many-sites-per-residue-in-the-two-searches">1. How many sites per residue in the two searches?</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(search, site_id, residue) <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(search, residue) <span class="sc">|&gt;</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> search, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 3
+  residue   STY  STYH
+  &lt;chr&gt;   &lt;int&gt; &lt;int&gt;
+1 S        1818  1760
+2 T        1462  1448
+3 Y         658   646
+4 H           0   424</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(search, site_id, residue) <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(search, residue) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> residue, <span class="at">y =</span> n, <span class="at">fill =</span> search)) <span class="sc">+</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">width =</span> <span class="fl">0.9</span>, <span class="at">preserve =</span> <span class="st">"single"</span>)) <span class="sc">+</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"STY"</span> <span class="ot">=</span> <span class="st">"midnightblue"</span>,<span class="st">"STYH"</span> <span class="ot">=</span> <span class="st">'darkred'</span>)) <span class="sc">+</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Residue"</span>, <span class="at">y =</span> <span class="st">"Number of sites"</span>, <span class="at">fill =</span> <span class="st">"Search"</span>) <span class="sc">+</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="histidine_phosphoRicaCamilla_files/figure-html/residues-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p><strong>Question:</strong> the STYH search finds more sites in total. Are the additional sites only His sites, or do S/T/Y counts also change? Why might they?</p>
+</section>
+<section id="localisation-probability" class="level2">
+<h2 class="anchored" data-anchor-id="localisation-probability">2. Localisation probability</h2>
+<p><code>best_loc_prob</code> = best localisation probability of a site over all samples (1 = the search engine is sure the phosphate sits on exactly this residue).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>site_level <span class="ot">&lt;-</span> <span class="fu">distinct</span>(styh, site_id, residue, best_loc_prob)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(site_level, <span class="fu">aes</span>(best_loc_prob, <span class="at">colour =</span> residue)) <span class="sc">+</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ecdf</span>(<span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">0.75</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"best localisation probability"</span>, <span class="at">y =</span> <span class="st">"fraction of sites with LP &lt;= x"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"STYH search: localisation probability per residue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="histidine_phosphoRicaCamilla_files/figure-html/lp-distribution-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>site_level <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lp_class =</span> <span class="fu">lp_class</span>(best_loc_prob)) <span class="sc">|&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(residue, lp_class) <span class="sc">|&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> lp_class, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 × 6
+  residue `&lt;0.5` `0.5-0.75` `0.75-0.9` `0.9-0.99` `&gt;=0.99`
+  &lt;chr&gt;    &lt;int&gt;      &lt;int&gt;      &lt;int&gt;      &lt;int&gt;    &lt;int&gt;
+1 H           93        122        131         50       28
+2 S          311        320        431        519      179
+3 T          299        338        392        272      147
+4 Y          151        168        150        110       67</code></pre>
+</div>
+</div>
+<p><strong>Question:</strong> Are His sites localised as well as S/T/Y sites? How many His sites have LP ≥ 0.75?</p>
+</section>
+<section id="one-evidence-table-for-every-his-site" class="level2">
+<h2 class="anchored" data-anchor-id="one-evidence-table-for-every-his-site">3. One evidence table for every His site</h2>
+<p>We now collect, for every His site, the evidence we need. Read each step.</p>
+<section id="a.-sites-localisation-and-reproducibility" class="level3">
+<h3 class="anchored" data-anchor-id="a.-sites-localisation-and-reproducibility">3a. Sites, localisation and reproducibility</h3>
+<p><strong>Reproducibility is judged from the intensity</strong> (detected = intensity &gt; 0), not from the per-sample localisation probabilities: FragPipe sometimes reports an LP for a sample in which the site was <em>not quantified</em>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">sample_rows =</span> <span class="fu">n</span>(),</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">quantified =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">LP_reported_but_not_quantified =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(intensity) <span class="sc">&amp;</span> loc_prob_fragpipe <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 3
+  sample_rows quantified LP_reported_but_not_quantified
+        &lt;int&gt;      &lt;int&gt;                          &lt;int&gt;
+1       11448       1358                             31</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> styh <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(site_id, locus_tag, product, peptide, best_loc_prob) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_samples_quant =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)),                  <span class="co"># of 27</span></span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_samples_lp075 =</span> <span class="fu">sum</span>(loc_prob_fragpipe <span class="sc">&gt;=</span> <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),  <span class="co"># FragPipe LPs, for reference only</span></span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_reps_in_group =</span> <span class="fu">max</span>(<span class="fu">tapply</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity), group, sum)),  <span class="co"># best group, of 3</span></span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lp_class =</span> <span class="fu">lp_class</span>(best_loc_prob))</span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(his)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 424</code></pre>
+</div>
+</div>
+</section>
+<section id="b.-is-there-an-alternative-acceptor-on-the-peptide" class="level3">
+<h3 class="anchored" data-anchor-id="b.-is-there-an-alternative-acceptor-on-the-peptide">3b. Is there an alternative acceptor on the peptide?</h3>
+<p>If the peptide contains <strong>no S, T or Y at all</strong>, the phosphate cannot be mis-placed onto a neighbouring S/T/Y. That is the strongest kind of evidence we can get from the search alone. A <code>Peptide</code> entry can contain several sequence variants separated by <code>;</code> – we take the variant with the fewest S/T/Y.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">peptide_variants</span>(<span class="st">"ANhEQIIEAIK;MANhEQIIEAIK"</span>)   <span class="co"># example: two variants, upper-cased</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[[1]]
+[1] "ANHEQIIEAIK"  "MANHEQIIEAIK"</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_sty_acceptors</span>(<span class="st">"ANhEQIIEAIK;MANhEQIIEAIK"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_sty_acceptors =</span> <span class="fu">n_sty_acceptors</span>(peptide),</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">no_alt_acceptor =</span> n_sty_acceptors <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">co_phospho_STY  =</span> <span class="fu">co_phospho_sty</span>(peptide))</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(his, no_alt_acceptor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 × 2
+  no_alt_acceptor     n
+  &lt;lgl&gt;           &lt;int&gt;
+1 FALSE             405
+2 TRUE               19</code></pre>
+</div>
+</div>
+</section>
+<section id="c.-does-the-sty-only-search-explain-the-same-peptide" class="level3">
+<h3 class="anchored" data-anchor-id="c.-does-the-sty-only-search-explain-the-same-peptide">3c. Does the STY-only search explain the same peptide?</h3>
+<p>If the very same peptide was also identified as a phosphopeptide in the STY search, the spectrum can be explained <strong>without</strong> pHis. FragPipe writes phospho residues in lower case, so we compare upper-cased sequences. We count a His peptide as “explained” only if <strong>all</strong> its variants appear in the STY search.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>sty_peptides <span class="ot">&lt;-</span> <span class="fu">phosphopeptide_set</span>(sty)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">seen_in_STY_search   =</span> <span class="fu">all_variants_in</span>(peptide, sty_peptides),</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">partly_in_STY_search =</span> <span class="fu">any_variant_in</span>(peptide, sty_peptides))</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(his, no_alt_acceptor, seen_in_STY_search)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 × 3
+  no_alt_acceptor seen_in_STY_search     n
+  &lt;lgl&gt;           &lt;lgl&gt;              &lt;int&gt;
+1 FALSE           FALSE                175
+2 FALSE           TRUE                 230
+3 TRUE            FALSE                 19</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="worked-example-hpr-his15" class="level2">
+<h2 class="anchored" data-anchor-id="worked-example-hpr-his15">4. Worked example: HPr His15</h2>
+<p>HPr (phosphocarrier protein of the PTS sugar uptake system) carries a <strong>textbook pHis at His15</strong> – the phosphate is transferred from enzyme I to HPr-His15 and on to sugar transporters. If we find any real pHis, HPr should be a candidate.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>hpr <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"B7H15_05615"</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(locus_tag, product, protein_key, staa8_uniprot)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>hpr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 1 × 4
+  locus_tag   product                    protein_key               staa8_uniprot
+  &lt;chr&gt;       &lt;chr&gt;                      &lt;chr&gt;                     &lt;chr&gt;        
+1 B7H15_05615 phosphocarrier protein HPr lcl_CP020619.1_prot_ARG4… Q2FZH6       </code></pre>
+</div>
+</div>
+<p>The same HPr peptide in the two searches:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>hpr_peptide <span class="ot">&lt;-</span> <span class="st">"MEQNSYVIIDETGIHAR"</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(protein_key <span class="sc">%in%</span> hpr<span class="sc">$</span>protein_key,</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">str_detect</span>(<span class="fu">toupper</span>(peptide), hpr_peptide)) <span class="sc">|&gt;</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(search, site_id, residue, position, peptide, best_loc_prob) <span class="sc">|&gt;</span></span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_samples_quant =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(search, position)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 13 × 7
+   search site_id         residue position peptide best_loc_prob n_samples_quant
+   &lt;chr&gt;  &lt;chr&gt;           &lt;chr&gt;      &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;           &lt;int&gt;
+ 1 STY    lcl_CP020619.1… S              5 EQNsyV…         0.963              27
+ 2 STY    lcl_CP020619.1… Y              6 EQNSyV…         0.963              27
+ 3 STY    lcl_CP020619.1… T             12 EQNSYV…         0.963              27
+ 4 STY    lcl_CP020619.1… T             20 MEQNSY…         0.963              26
+ 5 STY    lcl_CP020619.1… T             25 MEQNSY…         0.942              17
+ 6 STY    lcl_CP020619.1… S             27 MEQNSY…         0.904              12
+ 7 STYH   lcl_CP020619.1… S              5 EQNsyV…         0.952              27
+ 8 STYH   lcl_CP020619.1… Y              6 EQNSyV…         0.952              27
+ 9 STYH   lcl_CP020619.1… T             12 EQNSYV…         0.958              27
+10 STYH   lcl_CP020619.1… H             15 MEQNSY…         0.893              18
+11 STYH   lcl_CP020619.1… T             20 MEQNSY…         0.959              26
+12 STYH   lcl_CP020619.1… T             25 MEQNSY…         0.938              19
+13 STYH   lcl_CP020619.1… S             27 MEQNSY…         0.9                11</code></pre>
+</div>
+</div>
+<p><strong>Questions</strong></p>
+<ul>
+<li>In the STY search, where is the phosphate placed on this peptide? In STYH?</li>
+<li>Which interpretation is chemically / biologically more plausible, and why?</li>
+<li>Is the STY-search interpretation “wrong” – or simply the best it could do without H?</li>
+<li>Does this single example prove that pHis survives our workflow?</li>
+</ul>
+</section>
+<section id="his-sites-on-proteins-that-should-carry-phis" class="level2">
+<h2 class="anchored" data-anchor-id="his-sites-on-proteins-that-should-carry-phis">5. His sites on proteins that <em>should</em> carry pHis</h2>
+<p>Classical pHis proteins in bacteria: <strong>histidine kinases</strong> of two-component systems (autophosphorylation on His, transfer to Asp of the response regulator – note: pAsp was not searched), <strong>HPr</strong> and <strong>enzyme I</strong> of the PTS, and some metabolic enzymes (e.g.&nbsp;succinyl-CoA synthetase, nucleoside-diphosphate kinase).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>canonical_pattern <span class="ot">&lt;-</span> <span class="st">"histidine kinase|phosphocarrier|PTS|phosphoenolpyruvate|response regulator|succinate--CoA|nucleoside-diphosphate kinase"</span></span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">find_protein</span>(canonical_pattern) <span class="sc">|&gt;</span> <span class="fu">count</span>(product, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 31 × 2
+   product                                          n
+   &lt;chr&gt;                                        &lt;int&gt;
+ 1 DNA-binding response regulator                  16
+ 2 sensor histidine kinase                          6
+ 3 two-component sensor histidine kinase            6
+ 4 PTS lactose transporter subunit IIB              2
+ 5 histidine kinase                                 2
+ 6 PTS alpha-glucoside transporter subunit IIBC     1
+ 7 PTS ascorbate transporter subunit IIA            1
+ 8 PTS ascorbate transporter subunit IIC            1
+ 9 PTS fructose transporter subunit IIC             1
+10 PTS galactitol transporter subunit IIB           1
+# ℹ 21 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>his <span class="sc">|&gt;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(product, <span class="fu">regex</span>(canonical_pattern, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product, site_id, peptide, best_loc_prob, n_sty_acceptors,</span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a>         seen_in_STY_search, max_reps_in_group)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 16 × 8
+   locus_tag   product             site_id peptide best_loc_prob n_sty_acceptors
+   &lt;chr&gt;       &lt;chr&gt;               &lt;chr&gt;   &lt;chr&gt;           &lt;dbl&gt;           &lt;dbl&gt;
+ 1 B7H15_01055 PTS glucose EIICBA… lcl_CP… SATSEL…         0.826               8
+ 2 B7H15_01055 PTS glucose EIICBA… lcl_CP… SATSEL…         0.919               8
+ 3 B7H15_03905 PTS fructose trans… lcl_CP… LLhASS…         0.700               6
+ 4 B7H15_03905 PTS fructose trans… lcl_CP… VETNGS…         0.750               6
+ 5 B7H15_03905 PTS fructose trans… lcl_CP… EAIhNR…         0.857               4
+ 6 B7H15_03935 DNA-binding respon… lcl_CP… YHhQPV…         0.326               4
+ 7 B7H15_05615 phosphocarrier pro… lcl_CP… MEQNSY…         0.893               3
+ 8 B7H15_09405 PTS glucose transp… lcl_CP… YQAGFF…         0.557               5
+ 9 B7H15_09750 phosphoenolpyruvat… lcl_CP… AAYPIN…         0.492               2
+10 B7H15_11300 DNA-binding respon… lcl_CP… IIDCLE…         0.788               2
+11 B7H15_11960 PTS lactose transp… lcl_CP… LALNDC…         0.889               2
+12 B7H15_11965 PTS mannitol trans… lcl_CP… TNVIhS…         0.695               3
+13 B7H15_14115 PTS glucoside EIIC… lcl_CP… ELSQAA…         0.738               4
+14 B7H15_14710 PTS mannose transp… lcl_CP… IINQDA…         0.325               5
+15 B7H15_14710 PTS mannose transp… lcl_CP… NTPVIA…         0.7                 6
+16 B7H15_14710 PTS mannose transp… lcl_CP… HShLNK…         0.523               5
+# ℹ 2 more variables: seen_in_STY_search &lt;lgl&gt;, max_reps_in_group &lt;int&gt;</code></pre>
+</div>
+</div>
+<p><strong>Question:</strong> Do any histidine kinases show a His site? Is the site at the conserved, autophosphorylated His (look at the protein in UniProt via <code>staa8_uniprot</code>)? What about the many His sites on proteins that are <em>not</em> known pHis proteins?</p>
+</section>
+<section id="your-task-build-confidence-tiers" class="level2">
+<h2 class="anchored" data-anchor-id="your-task-build-confidence-tiers">6. Your task: build confidence tiers</h2>
+<p>Combine the evidence into <strong>tiers</strong>, from “strongest candidate” to “unreliable”. Suggested criteria (you decide the order and thresholds – and justify them!):</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>evidence</th>
+<th>column</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>no alternative S/T/Y acceptor on the peptide</td>
+<td><code>no_alt_acceptor</code></td>
+</tr>
+<tr class="even">
+<td>well localised</td>
+<td><code>best_loc_prob &gt;= 0.75</code></td>
+</tr>
+<tr class="odd">
+<td>reproducible: ≥ 2 of 3 replicates in some group</td>
+<td><code>max_reps_in_group &gt;= 2</code></td>
+</tr>
+<tr class="even">
+<td>peptide <strong>not</strong> explained by the STY search</td>
+<td><code>!seen_in_STY_search</code></td>
+</tr>
+</tbody>
+</table>
+<p>Write your tiers below (set <code>eval: true</code> once you filled in the conditions). Number tiers 1 (strongest) to 6 (weakest) and <strong>start every label with the number</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">tier =</span> <span class="fu">case_when</span>(</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">&amp;</span></span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>        best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">&amp;</span></span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>        max_reps_in_group <span class="sc">&gt;=</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>seen_in_STY_search <span class="sc">~</span> <span class="st">"1 strongest"</span>,</span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>      best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">&amp;</span></span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>        max_reps_in_group <span class="sc">&gt;=</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>seen_in_STY_search <span class="sc">~</span> <span class="st">"2 very strong"</span>,</span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">&amp;</span></span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>        best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">~</span> <span class="st">"3 strong"</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>      best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">~</span> <span class="st">"4 moderate"</span>,</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">~</span> <span class="st">"5 weak"</span>,</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"6 unreliable"</span>))</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(my_tiers, tier)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  tier              n
+  &lt;chr&gt;         &lt;int&gt;
+1 1 strongest       5
+2 2 very strong    28
+3 3 strong         13
+4 4 moderate      163
+5 5 weak            1
+6 6 unreliable    214</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="co">#add plot</span></span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="sc">|&gt;</span></span>
+<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(tier) <span class="sc">|&gt;</span></span>
+<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tier =</span> <span class="fu">factor</span>(</span>
+<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>    tier,</span>
+<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(</span>
+<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">"1 strongest"</span>,</span>
+<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">"2 very strong"</span>,</span>
+<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"3 strong"</span>,</span>
+<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"4 moderate"</span>,</span>
+<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">"5 weak"</span>,</span>
+<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"6 unreliable"</span></span>
+<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(tier, n)) <span class="sc">+</span></span>
+<span id="cb30-17"><a href="#cb30-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb30-18"><a href="#cb30-18" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"midnightblue"</span>) <span class="sc">+</span></span>
+<span id="cb30-19"><a href="#cb30-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb30-20"><a href="#cb30-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Tier"</span>,</span>
+<span id="cb30-21"><a href="#cb30-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of sites"</span>,</span>
+<span id="cb30-22"><a href="#cb30-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"His-site confidence tiers"</span></span>
+<span id="cb30-23"><a href="#cb30-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb30-24"><a href="#cb30-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="histidine_phosphoRicaCamilla_files/figure-html/my-tiers-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Check your tiers against the lecturer’s reference (counts only – it tells you <em>how many</em> sites agree, not <em>which</em>):</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_his_tiers</span>(my_tiers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>294 of 424 His sites agree with the reference.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       reference_tier
+my_tier   1   2   3   4   5   6
+      1   5   0   0   0   0   0
+      2   0   0   0  28   0   0
+      3   0  13   0   0   0   0
+      4   0   0   0  75  88   0
+      5   0   0   1   0   0   0
+      6   0   0   0   0   0 214</code></pre>
+</div>
+</div>
+<p>Which are the strongest sites? The following sites fullfil all criteria of the strongest confidence tier: no alternative S/T/Y acceptor, localisation probability ≥ 0.75, reproducible detection (≥ 2 replicates in one group), and not explained by the STY search (are located in tier 1).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="sc">|&gt;</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"1 strongest"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a>    site_id,</span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>    locus_tag,</span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>    product,</span>
+<span id="cb34-7"><a href="#cb34-7" aria-hidden="true" tabindex="-1"></a>    peptide,</span>
+<span id="cb34-8"><a href="#cb34-8" aria-hidden="true" tabindex="-1"></a>    best_loc_prob,</span>
+<span id="cb34-9"><a href="#cb34-9" aria-hidden="true" tabindex="-1"></a>    max_reps_in_group)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 × 6
+  site_id              locus_tag product peptide best_loc_prob max_reps_in_group
+  &lt;chr&gt;                &lt;chr&gt;     &lt;chr&gt;   &lt;chr&gt;           &lt;dbl&gt;             &lt;int&gt;
+1 lcl_CP020619.1_prot… B7H15_02… 50S ri… ANhEQI…         1                     3
+2 lcl_CP020619.1_prot… B7H15_06… riboso… EVLKDH…         0.767                 2
+3 lcl_CP020619.1_prot… B7H15_06… homose… DLLAVh…         1                     2
+4 lcl_CP020619.1_prot… B7H15_08… segreg… LDAFNG…         1                     2
+5 lcl_CP020619.1_prot… B7H15_09… peptid… HLVEQA…         0.766                 2</code></pre>
+</div>
+</div>
+<p>according to String, they are not linked in any way. They don’t belong to an obvious pathway.</p>
+</section>
+<section id="is-it-random-histidine-kinase-annotated-proteins" class="level2">
+<h2 class="anchored" data-anchor-id="is-it-random-histidine-kinase-annotated-proteins">6.1 is it random (histidine kinase annotated proteins)?</h2>
+<p>Possible histidine kinase annotated proteins (genome wide)</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 15 × 2
+   locus_tag   product                                          
+   &lt;chr&gt;       &lt;chr&gt;                                            
+ 1 B7H15_00115 cell wall metabolism sensor histidine kinase WalK
+ 2 B7H15_01195 sensor histidine kinase                          
+ 3 B7H15_01400 sensor histidine kinase                          
+ 4 B7H15_03695 sensor histidine kinase                          
+ 5 B7H15_03930 two-component sensor histidine kinase            
+ 6 B7H15_06945 two-component sensor histidine kinase            
+ 7 B7H15_07455 two-component sensor histidine kinase            
+ 8 B7H15_08215 two-component sensor histidine kinase            
+ 9 B7H15_09215 sensor histidine kinase                          
+10 B7H15_10150 histidine kinase                                 
+11 B7H15_10500 two-component sensor histidine kinase            
+12 B7H15_11550 sensor histidine kinase                          
+13 B7H15_13105 two-component sensor histidine kinase            
+14 B7H15_13260 sensor histidine kinase                          
+15 B7H15_14615 histidine kinase                                 </code></pre>
+</div>
+</div>
+<p>found in the dataset styh sites</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a>tcs <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product)</span>
+<span id="cb38-3"><a href="#cb38-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb38-4"><a href="#cb38-4" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
+<span id="cb38-5"><a href="#cb38-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb38-6"><a href="#cb38-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(tcs, <span class="at">by =</span> <span class="st">"locus_tag"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  locus_tag   product                                          
+  &lt;chr&gt;       &lt;chr&gt;                                            
+1 B7H15_00115 cell wall metabolism sensor histidine kinase WalK
+2 B7H15_03930 two-component sensor histidine kinase            
+3 B7H15_07455 two-component sensor histidine kinase            
+4 B7H15_11550 sensor histidine kinase                          
+5 B7H15_13105 two-component sensor histidine kinase            
+6 B7H15_14615 histidine kinase                                 </code></pre>
+</div>
+</div>
+<p>Following a test is the phosphorilisation is random or not on histidine kinase annotated proteins(Fisher Test).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a><span class="do">##  define TCS-proteines </span></span>
+<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>tcs <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span>
+<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a><span class="do">## All proteins</span></span>
+<span id="cb40-7"><a href="#cb40-7" aria-hidden="true" tabindex="-1"></a>all_proteins <span class="ot">&lt;-</span> styh <span class="sc">|&gt;</span></span>
+<span id="cb40-8"><a href="#cb40-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb40-9"><a href="#cb40-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
+<span id="cb40-10"><a href="#cb40-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-11"><a href="#cb40-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">TCS =</span> locus_tag <span class="sc">%in%</span> tcs<span class="sc">$</span>locus_tag</span>
+<span id="cb40-12"><a href="#cb40-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-13"><a href="#cb40-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-14"><a href="#cb40-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Proteines with at least one pHis</span></span>
+<span id="cb40-15"><a href="#cb40-15" aria-hidden="true" tabindex="-1"></a>his_proteins <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb40-16"><a href="#cb40-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb40-17"><a href="#cb40-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
+<span id="cb40-18"><a href="#cb40-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">has_pHis =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb40-19"><a href="#cb40-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-20"><a href="#cb40-20" aria-hidden="true" tabindex="-1"></a><span class="do">## put together</span></span>
+<span id="cb40-21"><a href="#cb40-21" aria-hidden="true" tabindex="-1"></a>protein_tbl <span class="ot">&lt;-</span> all_proteins <span class="sc">|&gt;</span></span>
+<span id="cb40-22"><a href="#cb40-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(his_proteins, <span class="at">by =</span> <span class="st">"locus_tag"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb40-23"><a href="#cb40-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb40-24"><a href="#cb40-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">has_pHis =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(has_pHis), <span class="cn">FALSE</span>, has_pHis)</span>
+<span id="cb40-25"><a href="#cb40-25" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb40-26"><a href="#cb40-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-27"><a href="#cb40-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 2x2-table</span></span>
+<span id="cb40-28"><a href="#cb40-28" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb40-29"><a href="#cb40-29" aria-hidden="true" tabindex="-1"></a>  protein_tbl<span class="sc">$</span>TCS,</span>
+<span id="cb40-30"><a href="#cb40-30" aria-hidden="true" tabindex="-1"></a>  protein_tbl<span class="sc">$</span>has_pHis</span>
+<span id="cb40-31"><a href="#cb40-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb40-32"><a href="#cb40-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb40-33"><a href="#cb40-33" aria-hidden="true" tabindex="-1"></a>tab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>       
+        FALSE TRUE
+  FALSE   793  312
+  TRUE      6    0</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Fisher Exact Test</span></span>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Fisher's Exact Test for Count Data
+
+data:  tab
+p-value = 0.1934
+alternative hypothesis: true odds ratio is not equal to 1
+95 percent confidence interval:
+ 0.000000 2.172521
+sample estimates:
+odds ratio 
+         0 </code></pre>
+</div>
+</div>
+<p>Six proteins annotated as histidine kinases (TCS proteins) were identified in the dataset. None contained a detected histidine phosphosite. Consequently, the estimated odds ratio was 0. However, Fisher’s exact test did not indicate a significant association between TCS membership and the occurrence of histidine phosphosites (p = 0.193). Not really valuable because only very few histidine kinase annotated proteins detected.</p>
+</section>
+<section id="real-or-artefact-a-decision-framework" class="level2">
+<h2 class="anchored" data-anchor-id="real-or-artefact-a-decision-framework">7. Real or artefact? A decision framework</h2>
+<p>For each candidate, go through this list and write your verdict in your lab notebook.</p>
+<ol type="1">
+<li><strong>Chemistry:</strong> acid-labile pHis + acidic workflow → is it plausible the site survived?</li>
+<li><strong>Localisation:</strong> LP ≥ 0.75? Any S/T/Y on the peptide? Same peptide explained by STY?</li>
+<li><strong>Reproducibility:</strong> seen in ≥ 2/3 replicates of a group? In more than one group?</li>
+<li><strong>Biology:</strong> is the protein a known His-phosphorylated protein? Is the His conserved?</li>
+<li><strong>Spectra:</strong> (beyond this course, but name it) inspect the MS2 spectra – are there fragment ions that pin the phosphate to H? pHis shows characteristic neutral losses (e.g.&nbsp;−80, −98, −116 Da).</li>
+<li><strong>Orthogonal validation:</strong> pHis-specific antibodies, non-acidic enrichment, mutation of the His.</li>
+</ol>
+<p><strong>Discussion:</strong> after this analysis, how would you phrase our evidence for (or against) the claim of Prust <em>et al.</em>? Distinguish “we found no evidence” from “we found evidence of absence”.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>R version 4.5.2 (2025-10-31 ucrt)
+Platform: x86_64-w64-mingw32/x64
+Running under: Windows 11 x64 (build 26300)
+
+Matrix products: default
+  LAPACK version 3.12.1
+
+locale:
+[1] LC_COLLATE=German_Switzerland.utf8  LC_CTYPE=German_Switzerland.utf8   
+[3] LC_MONETARY=German_Switzerland.utf8 LC_NUMERIC=C                       
+[5] LC_TIME=German_Switzerland.utf8    
+
+time zone: Europe/Zurich
+tzcode source: internal
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] ggplot2_4.0.2 stringr_1.6.0 readr_2.2.0   tidyr_1.3.2   dplyr_1.2.0  
+
+loaded via a namespace (and not attached):
+ [1] bit_4.6.0          gtable_0.3.6       jsonlite_2.0.0     crayon_1.5.3      
+ [5] compiler_4.5.2     tidyselect_1.2.1   parallel_4.5.2     scales_1.4.0      
+ [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
+[13] generics_0.1.4     knitr_1.51         tibble_3.3.1       pillar_1.11.1     
+[17] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.1.7        utf8_1.2.6        
+[21] stringi_1.8.7      xfun_0.56          S7_0.2.1           bit64_4.6.0-1     
+[25] cli_3.6.5          withr_3.0.2        magrittr_2.0.4     digest_0.6.39     
+[29] grid_4.5.2         vroom_1.7.0        rstudioapi_0.18.0  hms_1.1.4         
+[33] lifecycle_1.0.5    vctrs_0.7.1        evaluate_1.0.5     glue_1.8.0        
+[37] farver_2.1.2       rmarkdown_2.30     purrr_1.2.1        tools_4.5.2       
+[41] pkgconfig_2.0.3    htmltools_0.5.9   </code></pre>
+</div>
+</div>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>
