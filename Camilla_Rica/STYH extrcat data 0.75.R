@@ -3,8 +3,12 @@ library(dplyr)
 library(readr)
 
 # 1. Read original STYH dataset
-data <- read_tsv("C:\\Users\\Rica\\Documents\\UZH\\Bio253\\bio253-je2-proteomics\\Camilla_Rica\\combined_site_STYH.tsv",
-                 show_col_types = FALSE)
+
+                
+library(here)
+source(here("R", "setup.R"))
+data <- read_tsv(
+  here("Camilla_Rica", "combined_site_STYH.tsv"))
 
 # 2. Select peptides containing lowercase h
 # and exclude contaminant proteins
