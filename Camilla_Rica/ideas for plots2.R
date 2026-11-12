@@ -4,7 +4,7 @@ library(readr)
 library(ggplot2)
 
 # Read original dataset
-data <- read_tsv("combined_site_STYH.tsv")
+data <- read_tsv("C:\\Users\\Rica\\Documents\\UZH\\Bio253\\bio253-je2-proteomics\\Camilla_Rica\\combined_site_STYH.tsv")
 
 # All lowercase h, excluding contaminants
 his_all <- data %>%
