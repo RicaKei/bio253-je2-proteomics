@@ -285,7 +285,7 @@ Check your tiers against the lecturer's reference (counts only – it tells you
 *how many* sites agree, not *which*):
 
 ```{r check}
-#| eval: TRUE
+#| eval: true
 check_his_tiers(my_tiers)
 ```
 
@@ -308,6 +308,17 @@ my_tiers |>
 ```
 
 according to  String, they are not linked in any way. They don't belong to an obvious pathway.
+
+
+
+```{r}
+my_tiers %>%
+  filter(tier == "2 very strong") %>%
+  distinct(site_id,locus_tag, product) %>%
+  arrange(product)
+```
+
+
 
 ## 6.1 is it random (histidine kinase annotated proteins)?
 Possible histidine kinase annotated proteins (genome wide)
