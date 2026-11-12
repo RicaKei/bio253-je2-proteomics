@@ -9,9 +9,14 @@ library(dplyr)
 library(readr)
 
 # 1. Read both datasets
-STYH <- read_tsv("C:\\Users\\Rica\\Documents\\UZH\\Bio253\\bio253-je2-proteomics\\Camilla_Rica\\combined_site_STYH.tsv")
-STY <- read_tsv("C:\\Users\\Rica\\Documents\\UZH\\Bio253\\bio253-je2-proteomics\\Camilla_Rica\\combined_site_STY.tsv")
+library(here)
+source(here("R", "setup.R"))
+STYH <- read_tsv(
+  here("Camilla_Rica", "combined_site_STYH.tsv"))
 
+source(here("R", "setup.R"))
+STY <- read_tsv(
+  here("Camilla_Rica", "combined_site_STY.tsv"))
 # 2. Filter histidine phosphorylation candidates
 histidine <- STYH %>%
   filter(
