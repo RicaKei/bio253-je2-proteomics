@@ -48,6 +48,33 @@ bind_rows(styh, sty) |>
   scale_fill_manual(values = c("STY" = "midnightblue","STYH" = 'darkred')) +
   labs(x = "Residue", y = "Number of sites", fill = "Search") +
   theme_minimal()
+
+##Prozentual
+styh |>
+  distinct(site_id, residue) |>
+  count(residue) |>
+  mutate(percent = n / sum(n) * 100,
+         label = paste0(residue, "\n", round(percent, 1), "%")) |>
+  ggplot(aes(x = "", y = n, fill = residue)) +
+  geom_col(width = 1) +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5)) +
+  labs(fill = "Residue") +
+  theme_void()
+
+sty |>
+  distinct(site_id, residue) |>
+  count(residue) |>
+  mutate(percent = n / sum(n) * 100,
+         label = paste0(residue, "\n", round(percent, 1), "%")) |>
+  ggplot(aes(x = "", y = n, fill = residue)) +
+  geom_col(width = 1) +
+  coord_polar(theta = "y") +
+  geom_text(aes(label = label),
+            position = position_stack(vjust = 0.5)) +
+  labs(fill = "Residue") +
+  theme_void()
 ```
 
 **Question:** the STYH search finds more sites in total. Are the additional sites
