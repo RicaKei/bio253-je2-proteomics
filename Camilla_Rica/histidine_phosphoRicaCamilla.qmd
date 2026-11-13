@@ -27,6 +27,8 @@ We therefore treat pHis **very conservatively**. You will build evidence tiers y
 
 
 ```{r setup}
+
+library(ggrepel)
 library(dplyr)
 library(stringr)
 library(ggplot2)
@@ -545,6 +547,119 @@ ggplot2::ggplot(
 Now all phosphosites on these 5 proteins.
 
 ```{r}
+
+# Identify the 5 proteins from the strongest-tier histidine sites
+strongest_his <- my_tiers %>%
+  dplyr::filter(tier == "1 strongest") %>%
+  dplyr::select(site_id) %>%
+  dplyr::distinct()
+
+# Extract the 5 protein IDs
+selected_proteins <- strongest_his %>%
+  dplyr::mutate(
+    protein_Id = stringr::str_remove(
+      site_id, "_\\d+_[STYH]\\d+$"
+    )
+  ) %>%
+  dplyr::distinct(protein_Id)
+
+# Extract ALL STYH phosphorylation sites on these 5 proteins
+all_sites <- styh %>%
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    position = as.numeric(
+      stringr::str_extract(site_id, "\\d+$")
+    ),
+    protein_Id = stringr::str_remove(
+      site_id, "_\\d+_[STYH]\\d+$"
+    ),
+    residue = stringr::str_remove(residue, "^_")
+  ) %>%
+  dplyr::filter(residue %in% c("S", "T", "Y", "H")) %>%
+  dplyr::semi_join(selected_proteins, by = "protein_Id") %>%
+  dplyr::distinct(protein_Id, position, residue)
+
+# Standardize protein IDs and retrieve protein lengths
+protein_lengths <- total_prot %>%
+  dplyr::mutate(
+    protein_Id = stringr::str_extract(
+      protein_Id,
+      "lcl_CP020619\\.1_prot_ARG\\d+\\.1"
+    )
+  ) %>%
+  dplyr::select(protein_Id, protein_length) %>%
+  dplyr::distinct()
+
+# Combine phosphorylation sites with protein lengths
+plot_data <- all_sites %>%
+  dplyr::inner_join(protein_lengths, by = "protein_Id") %>%
+  dplyr::filter(!is.na(protein_length))
+
+# Plot all phosphorylation sites on the 5 selected proteins
+ggplot2::ggplot(
+  plot_data,
+  ggplot2::aes(y = factor(protein_Id))
+) +
+  ggplot2::geom_segment(
+    ggplot2::aes(
+      x = 1,
+      xend = protein_length,
+      yend = factor(protein_Id)
+    ),
+    linewidth = 3,
+    colour = "grey75"
+  ) +
+  ggplot2::geom_text(
+    ggplot2::aes(
+      x = protein_length,
+      label = protein_length
+    ),
+    hjust = -0.3,
+    colour = "grey40",
+    size = 3
+  ) +
+  ggplot2::scale_x_continuous(
+    expand = ggplot2::expansion(mult = c(0.02, 0.12))
+  ) +
+  ggplot2::geom_segment(
+    ggplot2::aes(
+      x = position,
+      xend = position,
+      y = as.numeric(factor(protein_Id)) - 0.08,
+      yend = as.numeric(factor(protein_Id)) + 0.08
+    ),
+    colour = "darkred",
+    linewidth = 0.8
+  ) +
+  ggrepel::geom_text_repel(
+  ggplot2::aes(
+    x = position,
+    y = as.numeric(factor(protein_Id)),
+    label = paste0(residue, position)
+  ),
+  colour = "darkred",
+  size = 3,
+  direction = "y",
+  nudge_y = 0.3,
+  segment.colour = "grey50",
+  segment.size = 0.3,
+  min.segment.length = 0,
+  box.padding = 0.3,
+  point.padding = 0.2,
+  max.overlaps = Inf
+  ) +
+  ggplot2::labs(
+    title = "All phosphorylation sites on the 5 selected proteins",
+    x = "Amino acid position",
+    y = "Protein ID"
+  ) +
+  ggplot2::theme_classic()
+
+
+
+
 
 ```
 
