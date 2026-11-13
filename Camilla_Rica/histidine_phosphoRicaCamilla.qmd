@@ -295,6 +295,8 @@ Number tiers 1 (strongest) to 6 (weakest) and **start every label with the numbe
 
 ```{r my-tiers}
 #| eval: true
+
+
 my_tiers <- his |>
   mutate(
     tier = case_when(
@@ -447,6 +449,7 @@ because only very few histidine kinase annotated proteins detected.
 First only the positions of the pHis on the proteins.
 ```{r}
 
+
 # Keep only the strongest-tier histidine sites
 strongest_his <- my_tiers %>%
   dplyr::filter(tier == "1 strongest") %>%
@@ -469,7 +472,7 @@ his_sites <- styh %>%
     residue = stringr::str_remove(residue, "^_")
   ) %>%
   dplyr::filter(residue == "H") %>%
-  dplyr::distinct(protein_Id, position)
+  dplyr::distinct(protein_Id, position, peptide)
 
 # Standardize protein IDs and retrieve protein lengths
 protein_lengths <- total_prot %>%
@@ -487,7 +490,18 @@ plot_data <- his_sites %>%
   dplyr::inner_join(protein_lengths, by = "protein_Id") %>%
   dplyr::filter(!is.na(protein_length))
 
-# Plot protein lengths and strongest-tier phosphorylation positions
+# Create labels with protein ID and peptide sequence
+protein_labels <- plot_data %>%
+  dplyr::group_by(protein_Id) %>%
+  dplyr::summarise(
+    peptide = paste(unique(peptide), collapse = "; "),
+    .groups = "drop"
+  ) %>%
+  dplyr::mutate(
+    axis_label = paste0(protein_Id, "\n", peptide)
+  )
+
+# Plot protein lengths and tier1 phosphorylation positions
 ggplot2::ggplot(
   plot_data,
   ggplot2::aes(y = factor(protein_Id))
@@ -533,10 +547,16 @@ ggplot2::ggplot(
     size = 3,
     vjust = 0
   ) +
+  ggplot2::scale_y_discrete(
+    labels = stats::setNames(
+      protein_labels$axis_label,
+      protein_labels$protein_Id
+    )
+  ) +
   ggplot2::labs(
     title = "Strongest-tier histidine phosphorylation sites",
     x = "Amino acid position",
-    y = "Protein ID"
+    y = "Protein ID / peptide sequence"
   ) +
   ggplot2::theme_classic()
 
