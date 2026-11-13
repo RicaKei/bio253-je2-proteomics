@@ -130,18 +130,77 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/setup.R"</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># keep contaminants here: we want the complete peptide lists of both searches</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>styh <span class="ot">&lt;-</span> <span class="fu">read_sites</span>(<span class="st">"STYH"</span>, <span class="at">drop_contaminants =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>sty  <span class="ot">&lt;-</span> <span class="fu">read_sites</span>(<span class="st">"STY"</span>,  <span class="at">drop_contaminants =</span> <span class="cn">FALSE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'ggrepel' wurde unter R Version 4.5.3 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Lade nötiges Paket: ggplot2</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>
+Attache Paket: 'dplyr'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Die folgenden Objekte sind maskiert von 'package:stats':
+
+    filter, lag</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Die folgenden Objekte sind maskiert von 'package:base':
+
+    intersect, setdiff, setequal, union</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(stringr)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Paket 'here' wurde unter R Version 4.5.3 erstellt</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>here() starts at C:/Users/Rica/Documents/UZH/Bio253/bio253-je2-proteomics</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../R/setup.R"</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="co"># keep contaminants here: we want the complete peptide lists of both searches</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>styh <span class="ot">&lt;-</span> <span class="fu">read_sites</span>(<span class="st">"STYH"</span>, <span class="at">drop_contaminants =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>sty  <span class="ot">&lt;-</span> <span class="fu">read_sites</span>(<span class="st">"STY"</span>,  <span class="at">drop_contaminants =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>total_prot <span class="ot">&lt;-</span> readxl<span class="sc">::</span><span class="fu">read_xlsx</span>(</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  here<span class="sc">::</span><span class="fu">here</span>(<span class="st">"data/raw/total"</span>, <span class="st">"DE_total.xlsx"</span>),</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">sheet =</span> <span class="st">"normalized_abundances"</span>,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">col_types =</span> <span class="st">"text"</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(protein_Id, protein_length) <span class="sc">%&gt;%</span></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">protein_length =</span> <span class="fu">as.numeric</span>(protein_length)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(total_prot)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 2
+  protein_Id                   protein_length
+  &lt;chr&gt;                                 &lt;dbl&gt;
+1 contam_sp|O82803|SRPP_HEVBR              NA
+2 contam_sp|P00330|ADH1_YEAST              NA
+3 contam_sp|P00711|LALBA_BOVIN             NA
+4 contam_sp|P00761|TRYP_PIG                NA
+5 contam_sp|P01031|CO5_HUMAN               NA
+6 contam_sp|P02662|CASA1_BOVIN             NA</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(total_prot<span class="sc">$</span>protein_length)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   Min. 1st Qu.  Median    Mean 3rd Qu.    Max.    NA's 
+      8     173     278     327     411   10421      48 </code></pre>
+</div>
 </div>
 <section id="how-many-sites-per-residue-in-the-two-searches" class="level2">
 <h2 class="anchored" data-anchor-id="how-many-sites-per-residue-in-the-two-searches">1. How many sites per residue in the two searches?</h2>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(search, site_id, residue) <span class="sc">|&gt;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(search, residue) <span class="sc">|&gt;</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> search, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(search, site_id, residue) <span class="sc">|&gt;</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(search, residue) <span class="sc">|&gt;</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> search, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 3
   residue   STY  STYH
@@ -151,14 +210,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 3 Y         658   646
 4 H           0   424</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(search, site_id, residue) <span class="sc">|&gt;</span></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(search, residue) <span class="sc">|&gt;</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> residue, <span class="at">y =</span> n, <span class="at">fill =</span> search)) <span class="sc">+</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">width =</span> <span class="fl">0.9</span>, <span class="at">preserve =</span> <span class="st">"single"</span>)) <span class="sc">+</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"STY"</span> <span class="ot">=</span> <span class="st">"midnightblue"</span>,<span class="st">"STYH"</span> <span class="ot">=</span> <span class="st">'darkred'</span>)) <span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Residue"</span>, <span class="at">y =</span> <span class="st">"Number of sites"</span>, <span class="at">fill =</span> <span class="st">"Search"</span>) <span class="sc">+</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(search, site_id, residue) <span class="sc">|&gt;</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(search, residue) <span class="sc">|&gt;</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> residue, <span class="at">y =</span> n, <span class="at">fill =</span> search)) <span class="sc">+</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="fu">position_dodge2</span>(<span class="at">width =</span> <span class="fl">0.9</span>, <span class="at">preserve =</span> <span class="st">"single"</span>)) <span class="sc">+</span></span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"STY"</span> <span class="ot">=</span> <span class="st">"midnightblue"</span>,<span class="st">"STYH"</span> <span class="ot">=</span> <span class="st">'darkred'</span>)) <span class="sc">+</span></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Residue"</span>, <span class="at">y =</span> <span class="st">"Number of sites"</span>, <span class="at">fill =</span> <span class="st">"Search"</span>) <span class="sc">+</span></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -166,19 +225,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Prozentual</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(site_id, residue) <span class="sc">|&gt;</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(residue) <span class="sc">|&gt;</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">label =</span> <span class="fu">paste0</span>(residue, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">round</span>(percent, <span class="dv">1</span>), <span class="st">"%"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> n, <span class="at">fill =</span> residue)) <span class="sc">+</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="at">theta =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> label),</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Residue"</span>) <span class="sc">+</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="do">##Prozentual</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(site_id, residue) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(residue) <span class="sc">|&gt;</span></span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>         <span class="at">label =</span> <span class="fu">paste0</span>(residue, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">round</span>(percent, <span class="dv">1</span>), <span class="st">"%"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> n, <span class="at">fill =</span> residue)) <span class="sc">+</span></span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="at">theta =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> label),</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Residue"</span>) <span class="sc">+</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -186,18 +245,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>sty <span class="sc">|&gt;</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(site_id, residue) <span class="sc">|&gt;</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(residue) <span class="sc">|&gt;</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n) <span class="sc">*</span> <span class="dv">100</span>,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">label =</span> <span class="fu">paste0</span>(residue, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">round</span>(percent, <span class="dv">1</span>), <span class="st">"%"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> n, <span class="at">fill =</span> residue)) <span class="sc">+</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="at">theta =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> label),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Residue"</span>) <span class="sc">+</span></span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>sty <span class="sc">|&gt;</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(site_id, residue) <span class="sc">|&gt;</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(residue) <span class="sc">|&gt;</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">percent =</span> n <span class="sc">/</span> <span class="fu">sum</span>(n) <span class="sc">*</span> <span class="dv">100</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>         <span class="at">label =</span> <span class="fu">paste0</span>(residue, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, <span class="fu">round</span>(percent, <span class="dv">1</span>), <span class="st">"%"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> <span class="st">""</span>, <span class="at">y =</span> n, <span class="at">fill =</span> residue)) <span class="sc">+</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_polar</span>(<span class="at">theta =</span> <span class="st">"y"</span>) <span class="sc">+</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> label),</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>            <span class="at">position =</span> <span class="fu">position_stack</span>(<span class="at">vjust =</span> <span class="fl">0.5</span>)) <span class="sc">+</span></span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"Residue"</span>) <span class="sc">+</span></span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_void</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -212,13 +271,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="localisation-probability">2. Localisation probability</h2>
 <p><code>best_loc_prob</code> = best localisation probability of a site over all samples (1 = the search engine is sure the phosphate sits on exactly this residue).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>site_level <span class="ot">&lt;-</span> <span class="fu">distinct</span>(styh, site_id, residue, best_loc_prob)</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(site_level, <span class="fu">aes</span>(best_loc_prob, <span class="at">colour =</span> residue)) <span class="sc">+</span></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ecdf</span>(<span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">0.75</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"best localisation probability"</span>, <span class="at">y =</span> <span class="st">"fraction of sites with LP &lt;= x"</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"STYH search: localisation probability per residue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>site_level <span class="ot">&lt;-</span> <span class="fu">distinct</span>(styh, site_id, residue, best_loc_prob)</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(site_level, <span class="fu">aes</span>(best_loc_prob, <span class="at">colour =</span> residue)) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">stat_ecdf</span>(<span class="at">linewidth =</span> <span class="fl">0.8</span>) <span class="sc">+</span></span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="fl">0.75</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"best localisation probability"</span>, <span class="at">y =</span> <span class="st">"fraction of sites with LP &lt;= x"</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>       <span class="at">title =</span> <span class="st">"STYH search: localisation probability per residue"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -226,10 +285,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </figure>
 </div>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>site_level <span class="sc">|&gt;</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lp_class =</span> <span class="fu">lp_class</span>(best_loc_prob)) <span class="sc">|&gt;</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(residue, lp_class) <span class="sc">|&gt;</span></span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> lp_class, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>site_level <span class="sc">|&gt;</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lp_class =</span> <span class="fu">lp_class</span>(best_loc_prob)) <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(residue, lp_class) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_wider</span>(<span class="at">names_from =</span> lp_class, <span class="at">values_from =</span> n, <span class="at">values_fill =</span> <span class="dv">0</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 4 × 6
   residue `&lt;0.5` `0.5-0.75` `0.75-0.9` `0.9-0.99` `&gt;=0.99`
@@ -249,12 +308,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="a.-sites-localisation-and-reproducibility">3a. Sites, localisation and reproducibility</h3>
 <p><strong>Reproducibility is judged from the intensity</strong> (detected = intensity &gt; 0), not from the per-sample localisation probabilities: FragPipe sometimes reports an LP for a sample in which the site was <em>not quantified</em>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">sample_rows =</span> <span class="fu">n</span>(),</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">quantified =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)),</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">LP_reported_but_not_quantified =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(intensity) <span class="sc">&amp;</span> loc_prob_fragpipe <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">sample_rows =</span> <span class="fu">n</span>(),</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">quantified =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)),</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">LP_reported_but_not_quantified =</span> <span class="fu">sum</span>(<span class="fu">is.na</span>(intensity) <span class="sc">&amp;</span> loc_prob_fragpipe <span class="sc">&gt;</span> <span class="dv">0</span>,</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>                                                 <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 3
   sample_rows quantified LP_reported_but_not_quantified
@@ -263,16 +322,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> styh <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(site_id, locus_tag, product, peptide, best_loc_prob) <span class="sc">|&gt;</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_samples_quant =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)),                  <span class="co"># of 27</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_samples_lp075 =</span> <span class="fu">sum</span>(loc_prob_fragpipe <span class="sc">&gt;=</span> <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),  <span class="co"># FragPipe LPs, for reference only</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_reps_in_group =</span> <span class="fu">max</span>(<span class="fu">tapply</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity), group, sum)),  <span class="co"># best group, of 3</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lp_class =</span> <span class="fu">lp_class</span>(best_loc_prob))</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(his)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> styh <span class="sc">|&gt;</span></span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(site_id, locus_tag, product, peptide, best_loc_prob) <span class="sc">|&gt;</span></span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_samples_quant =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)),                  <span class="co"># of 27</span></span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_samples_lp075 =</span> <span class="fu">sum</span>(loc_prob_fragpipe <span class="sc">&gt;=</span> <span class="fl">0.75</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),  <span class="co"># FragPipe LPs, for reference only</span></span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_reps_in_group =</span> <span class="fu">max</span>(<span class="fu">tapply</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity), group, sum)),  <span class="co"># best group, of 3</span></span>
+<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">lp_class =</span> <span class="fu">lp_class</span>(best_loc_prob))</span>
+<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(his)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 424</code></pre>
 </div>
@@ -282,20 +341,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="b.-is-there-an-alternative-acceptor-on-the-peptide">3b. Is there an alternative acceptor on the peptide?</h3>
 <p>If the peptide contains <strong>no S, T or Y at all</strong>, the phosphate cannot be mis-placed onto a neighbouring S/T/Y. That is the strongest kind of evidence we can get from the search alone. A <code>Peptide</code> entry can contain several sequence variants separated by <code>;</code> – we take the variant with the fewest S/T/Y.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">peptide_variants</span>(<span class="st">"ANhEQIIEAIK;MANhEQIIEAIK"</span>)   <span class="co"># example: two variants, upper-cased</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">peptide_variants</span>(<span class="st">"ANhEQIIEAIK;MANhEQIIEAIK"</span>)   <span class="co"># example: two variants, upper-cased</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[[1]]
 [1] "ANHEQIIEAIK"  "MANHEQIIEAIK"</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_sty_acceptors</span>(<span class="st">"ANhEQIIEAIK;MANhEQIIEAIK"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">n_sty_acceptors</span>(<span class="st">"ANhEQIIEAIK;MANhEQIIEAIK"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_sty_acceptors =</span> <span class="fu">n_sty_acceptors</span>(peptide),</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">no_alt_acceptor =</span> n_sty_acceptors <span class="sc">==</span> <span class="dv">0</span>,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">co_phospho_STY  =</span> <span class="fu">co_phospho_sty</span>(peptide))</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(his, no_alt_acceptor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">n_sty_acceptors =</span> <span class="fu">n_sty_acceptors</span>(peptide),</span>
+<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>         <span class="at">no_alt_acceptor =</span> n_sty_acceptors <span class="sc">==</span> <span class="dv">0</span>,</span>
+<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">co_phospho_STY  =</span> <span class="fu">co_phospho_sty</span>(peptide))</span>
+<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(his, no_alt_acceptor)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 2 × 2
   no_alt_acceptor     n
@@ -309,11 +368,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="c.-does-the-sty-only-search-explain-the-same-peptide">3c. Does the STY-only search explain the same peptide?</h3>
 <p>If the very same peptide was also identified as a phosphopeptide in the STY search, the spectrum can be explained <strong>without</strong> pHis. FragPipe writes phospho residues in lower case, so we compare upper-cased sequences. We count a His peptide as “explained” only if <strong>all</strong> its variants appear in the STY search.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>sty_peptides <span class="ot">&lt;-</span> <span class="fu">phosphopeptide_set</span>(sty)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">seen_in_STY_search   =</span> <span class="fu">all_variants_in</span>(peptide, sty_peptides),</span>
-<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">partly_in_STY_search =</span> <span class="fu">any_variant_in</span>(peptide, sty_peptides))</span>
-<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(his, no_alt_acceptor, seen_in_STY_search)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>sty_peptides <span class="ot">&lt;-</span> <span class="fu">phosphopeptide_set</span>(sty)</span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>his <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">seen_in_STY_search   =</span> <span class="fu">all_variants_in</span>(peptide, sty_peptides),</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>         <span class="at">partly_in_STY_search =</span> <span class="fu">any_variant_in</span>(peptide, sty_peptides))</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(his, no_alt_acceptor, seen_in_STY_search)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 3 × 3
   no_alt_acceptor seen_in_STY_search     n
@@ -329,8 +388,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="worked-example-hpr-his15">4. Worked example: HPr His15</h2>
 <p>HPr (phosphocarrier protein of the PTS sugar uptake system) carries a <strong>textbook pHis at His15</strong> – the phosphate is transferred from enzyme I to HPr-His15 and on to sugar transporters. If we find any real pHis, HPr should be a candidate.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>hpr <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"B7H15_05615"</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(locus_tag, product, protein_key, staa8_uniprot)</span>
-<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>hpr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>hpr <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"B7H15_05615"</span>) <span class="sc">|&gt;</span> <span class="fu">select</span>(locus_tag, product, protein_key, staa8_uniprot)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>hpr</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 1 × 4
   locus_tag   product                    protein_key               staa8_uniprot
@@ -340,13 +399,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>The same HPr peptide in the two searches:</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>hpr_peptide <span class="ot">&lt;-</span> <span class="st">"MEQNSYVIIDETGIHAR"</span></span>
-<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
-<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(protein_key <span class="sc">%in%</span> hpr<span class="sc">$</span>protein_key,</span>
-<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">str_detect</span>(<span class="fu">toupper</span>(peptide), hpr_peptide)) <span class="sc">|&gt;</span></span>
-<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(search, site_id, residue, position, peptide, best_loc_prob) <span class="sc">|&gt;</span></span>
-<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_samples_quant =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(search, position)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>hpr_peptide <span class="ot">&lt;-</span> <span class="st">"MEQNSYVIIDETGIHAR"</span></span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">bind_rows</span>(styh, sty) <span class="sc">|&gt;</span></span>
+<span id="cb37-3"><a href="#cb37-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(protein_key <span class="sc">%in%</span> hpr<span class="sc">$</span>protein_key,</span>
+<span id="cb37-4"><a href="#cb37-4" aria-hidden="true" tabindex="-1"></a>         <span class="fu">str_detect</span>(<span class="fu">toupper</span>(peptide), hpr_peptide)) <span class="sc">|&gt;</span></span>
+<span id="cb37-5"><a href="#cb37-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(search, site_id, residue, position, peptide, best_loc_prob) <span class="sc">|&gt;</span></span>
+<span id="cb37-6"><a href="#cb37-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n_samples_quant =</span> <span class="fu">sum</span>(<span class="sc">!</span><span class="fu">is.na</span>(intensity)), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb37-7"><a href="#cb37-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(search, position)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 13 × 7
    search site_id         residue position peptide best_loc_prob n_samples_quant
@@ -378,8 +437,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 class="anchored" data-anchor-id="his-sites-on-proteins-that-should-carry-phis">5. His sites on proteins that <em>should</em> carry pHis</h2>
 <p>Classical pHis proteins in bacteria: <strong>histidine kinases</strong> of two-component systems (autophosphorylation on His, transfer to Asp of the response regulator – note: pAsp was not searched), <strong>HPr</strong> and <strong>enzyme I</strong> of the PTS, and some metabolic enzymes (e.g.&nbsp;succinyl-CoA synthetase, nucleoside-diphosphate kinase).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>canonical_pattern <span class="ot">&lt;-</span> <span class="st">"histidine kinase|phosphocarrier|PTS|phosphoenolpyruvate|response regulator|succinate--CoA|nucleoside-diphosphate kinase"</span></span>
-<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="fu">find_protein</span>(canonical_pattern) <span class="sc">|&gt;</span> <span class="fu">count</span>(product, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a>canonical_pattern <span class="ot">&lt;-</span> <span class="st">"histidine kinase|phosphocarrier|PTS|phosphoenolpyruvate|response regulator|succinate--CoA|nucleoside-diphosphate kinase"</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a><span class="fu">find_protein</span>(canonical_pattern) <span class="sc">|&gt;</span> <span class="fu">count</span>(product, <span class="at">sort =</span> <span class="cn">TRUE</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 31 × 2
    product                                          n
@@ -396,10 +455,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 10 PTS galactitol transporter subunit IIB           1
 # ℹ 21 more rows</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>his <span class="sc">|&gt;</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(product, <span class="fu">regex</span>(canonical_pattern, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))) <span class="sc">|&gt;</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product, site_id, peptide, best_loc_prob, n_sty_acceptors,</span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>         seen_in_STY_search, max_reps_in_group)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>his <span class="sc">|&gt;</span></span>
+<span id="cb41-2"><a href="#cb41-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">str_detect</span>(product, <span class="fu">regex</span>(canonical_pattern, <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb41-3"><a href="#cb41-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product, site_id, peptide, best_loc_prob, n_sty_acceptors,</span>
+<span id="cb41-4"><a href="#cb41-4" aria-hidden="true" tabindex="-1"></a>         seen_in_STY_search, max_reps_in_group)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 16 × 8
    locus_tag   product             site_id peptide best_loc_prob n_sty_acceptors
@@ -421,6 +480,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 15 B7H15_14710 PTS mannose transp… lcl_CP… NTPVIA…         0.7                 6
 16 B7H15_14710 PTS mannose transp… lcl_CP… HShLNK…         0.523               5
 # ℹ 2 more variables: seen_in_STY_search &lt;lgl&gt;, max_reps_in_group &lt;int&gt;</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Define canonical phosphotransfer proteins</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a>canonical_proteins <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(canonical_pattern) <span class="sc">|&gt;</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="do">## All proteins detected in the STYH search</span></span>
+<span id="cb43-7"><a href="#cb43-7" aria-hidden="true" tabindex="-1"></a>all_proteins <span class="ot">&lt;-</span> styh <span class="sc">|&gt;</span></span>
+<span id="cb43-8"><a href="#cb43-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(locus_tag)</span>
+<span id="cb43-9"><a href="#cb43-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-10"><a href="#cb43-10" aria-hidden="true" tabindex="-1"></a><span class="do">## Identify canonical proteins</span></span>
+<span id="cb43-11"><a href="#cb43-11" aria-hidden="true" tabindex="-1"></a>protein_tbl <span class="ot">&lt;-</span> all_proteins <span class="sc">|&gt;</span></span>
+<span id="cb43-12"><a href="#cb43-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb43-13"><a href="#cb43-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">canonical =</span> locus_tag <span class="sc">%in%</span> canonical_proteins<span class="sc">$</span>locus_tag</span>
+<span id="cb43-14"><a href="#cb43-14" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb43-15"><a href="#cb43-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-16"><a href="#cb43-16" aria-hidden="true" tabindex="-1"></a><span class="do">## Identify proteins with at least one pHis site</span></span>
+<span id="cb43-17"><a href="#cb43-17" aria-hidden="true" tabindex="-1"></a>his_proteins <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb43-18"><a href="#cb43-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb43-19"><a href="#cb43-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">has_pHis =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb43-20"><a href="#cb43-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-21"><a href="#cb43-21" aria-hidden="true" tabindex="-1"></a><span class="do">## Combine both datasets</span></span>
+<span id="cb43-22"><a href="#cb43-22" aria-hidden="true" tabindex="-1"></a>protein_tbl <span class="ot">&lt;-</span> protein_tbl <span class="sc">|&gt;</span></span>
+<span id="cb43-23"><a href="#cb43-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(his_proteins, <span class="at">by =</span> <span class="st">"locus_tag"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb43-24"><a href="#cb43-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb43-25"><a href="#cb43-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">has_pHis =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(has_pHis), <span class="cn">FALSE</span>, has_pHis)</span>
+<span id="cb43-26"><a href="#cb43-26" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb43-27"><a href="#cb43-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-28"><a href="#cb43-28" aria-hidden="true" tabindex="-1"></a><span class="do">## Construct contingency table</span></span>
+<span id="cb43-29"><a href="#cb43-29" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb43-30"><a href="#cb43-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">factor</span>(protein_tbl<span class="sc">$</span>canonical, <span class="at">levels =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>)),</span>
+<span id="cb43-31"><a href="#cb43-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">factor</span>(protein_tbl<span class="sc">$</span>has_pHis, <span class="at">levels =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>)))</span>
+<span id="cb43-32"><a href="#cb43-32" aria-hidden="true" tabindex="-1"></a><span class="fu">rownames</span>(tab) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Canonical"</span>, <span class="st">"Other proteins"</span>)</span>
+<span id="cb43-33"><a href="#cb43-33" aria-hidden="true" tabindex="-1"></a><span class="fu">colnames</span>(tab) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"pHis detected"</span>, <span class="st">"No pHis detected"</span>)</span>
+<span id="cb43-34"><a href="#cb43-34" aria-hidden="true" tabindex="-1"></a>tab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                
+                 pHis detected No pHis detected
+  Canonical                 11               20
+  Other proteins           301              779</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Fisher's exact test</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Fisher's Exact Test for Count Data
+
+data:  tab
+p-value = 0.2296
+alternative hypothesis: true odds ratio is greater than 1
+95 percent confidence interval:
+ 0.6939186       Inf
+sample estimates:
+odds ratio 
+  1.422938 </code></pre>
 </div>
 </div>
 <p><strong>Question:</strong> Do any histidine kinases show a His site? Is the site at the conserved, autophosphorylated His (look at the protein in UniProt via <code>staa8_uniprot</code>)? What about the many His sites on proteins that are <em>not</em> known pHis proteins?</p>
@@ -460,22 +574,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <p>Write your tiers below (set <code>eval: true</code> once you filled in the conditions). Number tiers 1 (strongest) to 6 (weakest) and <strong>start every label with the number</strong>.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
-<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">tier =</span> <span class="fu">case_when</span>(</span>
-<span id="cb30-4"><a href="#cb30-4" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">&amp;</span></span>
-<span id="cb30-5"><a href="#cb30-5" aria-hidden="true" tabindex="-1"></a>        best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">&amp;</span></span>
-<span id="cb30-6"><a href="#cb30-6" aria-hidden="true" tabindex="-1"></a>        max_reps_in_group <span class="sc">&gt;=</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
-<span id="cb30-7"><a href="#cb30-7" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>seen_in_STY_search <span class="sc">~</span> <span class="st">"1 strongest"</span>,</span>
-<span id="cb30-8"><a href="#cb30-8" aria-hidden="true" tabindex="-1"></a>      best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">&amp;</span></span>
-<span id="cb30-9"><a href="#cb30-9" aria-hidden="true" tabindex="-1"></a>        max_reps_in_group <span class="sc">&gt;=</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
-<span id="cb30-10"><a href="#cb30-10" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>seen_in_STY_search <span class="sc">~</span> <span class="st">"2 very strong"</span>,</span>
-<span id="cb30-11"><a href="#cb30-11" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">&amp;</span></span>
-<span id="cb30-12"><a href="#cb30-12" aria-hidden="true" tabindex="-1"></a>        best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">~</span> <span class="st">"3 strong"</span>,</span>
-<span id="cb30-13"><a href="#cb30-13" aria-hidden="true" tabindex="-1"></a>      best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">~</span> <span class="st">"4 moderate"</span>,</span>
-<span id="cb30-14"><a href="#cb30-14" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">~</span> <span class="st">"5 weak"</span>,</span>
-<span id="cb30-15"><a href="#cb30-15" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"6 unreliable"</span>))</span>
-<span id="cb30-16"><a href="#cb30-16" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(my_tiers, tier)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">tier =</span> <span class="fu">case_when</span>(</span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">&amp;</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>        best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">&amp;</span></span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>        max_reps_in_group <span class="sc">&gt;=</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>seen_in_STY_search <span class="sc">~</span> <span class="st">"1 strongest"</span>,</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>      best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">&amp;</span></span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>        max_reps_in_group <span class="sc">&gt;=</span> <span class="dv">2</span> <span class="sc">&amp;</span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>        <span class="sc">!</span>seen_in_STY_search <span class="sc">~</span> <span class="st">"2 very strong"</span>,</span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">&amp;</span></span>
+<span id="cb47-12"><a href="#cb47-12" aria-hidden="true" tabindex="-1"></a>        best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">~</span> <span class="st">"3 strong"</span>,</span>
+<span id="cb47-13"><a href="#cb47-13" aria-hidden="true" tabindex="-1"></a>      best_loc_prob <span class="sc">&gt;=</span> <span class="fl">0.75</span> <span class="sc">~</span> <span class="st">"4 moderate"</span>,</span>
+<span id="cb47-14"><a href="#cb47-14" aria-hidden="true" tabindex="-1"></a>      no_alt_acceptor <span class="sc">~</span> <span class="st">"5 weak"</span>,</span>
+<span id="cb47-15"><a href="#cb47-15" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"6 unreliable"</span>))</span>
+<span id="cb47-16"><a href="#cb47-16" aria-hidden="true" tabindex="-1"></a><span class="fu">count</span>(my_tiers, tier)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
   tier              n
@@ -487,30 +601,30 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 5 5 weak            1
 6 6 unreliable    214</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co">#add plot</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="sc">|&gt;</span></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(tier) <span class="sc">|&gt;</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tier =</span> <span class="fu">factor</span>(</span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>    tier,</span>
-<span id="cb32-7"><a href="#cb32-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(</span>
-<span id="cb32-8"><a href="#cb32-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">"1 strongest"</span>,</span>
-<span id="cb32-9"><a href="#cb32-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">"2 very strong"</span>,</span>
-<span id="cb32-10"><a href="#cb32-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"3 strong"</span>,</span>
-<span id="cb32-11"><a href="#cb32-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"4 moderate"</span>,</span>
-<span id="cb32-12"><a href="#cb32-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">"5 weak"</span>,</span>
-<span id="cb32-13"><a href="#cb32-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"6 unreliable"</span></span>
-<span id="cb32-14"><a href="#cb32-14" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb32-15"><a href="#cb32-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
-<span id="cb32-16"><a href="#cb32-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(tier, n)) <span class="sc">+</span></span>
-<span id="cb32-17"><a href="#cb32-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
-<span id="cb32-18"><a href="#cb32-18" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"midnightblue"</span>) <span class="sc">+</span></span>
-<span id="cb32-19"><a href="#cb32-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb32-20"><a href="#cb32-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Tier"</span>,</span>
-<span id="cb32-21"><a href="#cb32-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of sites"</span>,</span>
-<span id="cb32-22"><a href="#cb32-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"His-site confidence tiers"</span></span>
-<span id="cb32-23"><a href="#cb32-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
-<span id="cb32-24"><a href="#cb32-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co">#add plot</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="sc">|&gt;</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(tier) <span class="sc">|&gt;</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">tier =</span> <span class="fu">factor</span>(</span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>    tier,</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">levels =</span> <span class="fu">c</span>(</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>      <span class="st">"1 strongest"</span>,</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>      <span class="st">"2 very strong"</span>,</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>      <span class="st">"3 strong"</span>,</span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>      <span class="st">"4 moderate"</span>,</span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>      <span class="st">"5 weak"</span>,</span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>      <span class="st">"6 unreliable"</span></span>
+<span id="cb49-14"><a href="#cb49-14" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb49-15"><a href="#cb49-15" aria-hidden="true" tabindex="-1"></a>  )) <span class="sc">|&gt;</span></span>
+<span id="cb49-16"><a href="#cb49-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(tier, n)) <span class="sc">+</span></span>
+<span id="cb49-17"><a href="#cb49-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb49-18"><a href="#cb49-18" aria-hidden="true" tabindex="-1"></a>   <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"midnightblue"</span>) <span class="sc">+</span></span>
+<span id="cb49-19"><a href="#cb49-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb49-20"><a href="#cb49-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Tier"</span>,</span>
+<span id="cb49-21"><a href="#cb49-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Number of sites"</span>,</span>
+<span id="cb49-22"><a href="#cb49-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"His-site confidence tiers"</span></span>
+<span id="cb49-23"><a href="#cb49-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span> </span>
+<span id="cb49-24"><a href="#cb49-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -521,7 +635,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Check your tiers against the lecturer’s reference (counts only – it tells you <em>how many</em> sites agree, not <em>which</em>):</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_his_tiers</span>(my_tiers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="fu">check_his_tiers</span>(my_tiers)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>294 of 424 His sites agree with the reference.</code></pre>
 </div>
@@ -538,15 +652,15 @@ my_tier   1   2   3   4   5   6
 </div>
 <p>Which are the strongest sites? The following sites fullfil all criteria of the strongest confidence tier: no alternative S/T/Y acceptor, localisation probability ≥ 0.75, reproducible detection (≥ 2 replicates in one group), and not explained by the STY search (are located in tier 1).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="sc">|&gt;</span></span>
-<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"1 strongest"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
-<span id="cb36-4"><a href="#cb36-4" aria-hidden="true" tabindex="-1"></a>    site_id,</span>
-<span id="cb36-5"><a href="#cb36-5" aria-hidden="true" tabindex="-1"></a>    locus_tag,</span>
-<span id="cb36-6"><a href="#cb36-6" aria-hidden="true" tabindex="-1"></a>    product,</span>
-<span id="cb36-7"><a href="#cb36-7" aria-hidden="true" tabindex="-1"></a>    peptide,</span>
-<span id="cb36-8"><a href="#cb36-8" aria-hidden="true" tabindex="-1"></a>    best_loc_prob,</span>
-<span id="cb36-9"><a href="#cb36-9" aria-hidden="true" tabindex="-1"></a>    max_reps_in_group)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="sc">|&gt;</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"1 strongest"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(</span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>    site_id,</span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>    locus_tag,</span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>    product,</span>
+<span id="cb53-7"><a href="#cb53-7" aria-hidden="true" tabindex="-1"></a>    peptide,</span>
+<span id="cb53-8"><a href="#cb53-8" aria-hidden="true" tabindex="-1"></a>    best_loc_prob,</span>
+<span id="cb53-9"><a href="#cb53-9" aria-hidden="true" tabindex="-1"></a>    max_reps_in_group)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 5 × 6
   site_id              locus_tag product peptide best_loc_prob max_reps_in_group
@@ -559,13 +673,35 @@ my_tier   1   2   3   4   5   6
 </div>
 </div>
 <p>according to String, they are not linked in any way. They don’t belong to an obvious pathway.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a>my_tiers <span class="sc">%&gt;%</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"2 very strong"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(site_id,locus_tag, product) <span class="sc">%&gt;%</span></span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(product)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 28 × 3
+   site_id                                  locus_tag   product                 
+   &lt;chr&gt;                                    &lt;chr&gt;       &lt;chr&gt;                   
+ 1 lcl_CP020619.1_prot_ARG46149.1_1710_H67  B7H15_08695 30S ribosomal protein S…
+ 2 lcl_CP020619.1_prot_ARG45752.1_1294_H18  B7H15_06610 DNA-binding protein     
+ 3 lcl_CP020619.1_prot_ARG44741.1_225_H140  B7H15_01135 FMN-dependent NADH-azor…
+ 4 lcl_CP020619.1_prot_ARG47231.1_2869_H46  B7H15_14755 accessory Sec system pr…
+ 5 lcl_CP020619.1_prot_ARG46495.1_2081_H162 B7H15_10745 acyl-CoA--6-aminopenici…
+ 6 lcl_CP020619.1_prot_ARG46685.1_2284_H213 B7H15_11785 aldehyde dehydrogenase …
+ 7 lcl_CP020619.1_prot_ARG46726.1_2326_H116 B7H15_11995 arginase                
+ 8 lcl_CP020619.1_prot_ARG46726.1_2326_H128 B7H15_11995 arginase                
+ 9 lcl_CP020619.1_prot_ARG45955.1_1505_H11  B7H15_07670 asparagine--tRNA ligase 
+10 lcl_CP020619.1_prot_ARG45957.1_1507_H234 B7H15_07680 bifunctional biotin--[a…
+# ℹ 18 more rows</code></pre>
+</div>
+</div>
 </section>
 <section id="is-it-random-histidine-kinase-annotated-proteins" class="level2">
 <h2 class="anchored" data-anchor-id="is-it-random-histidine-kinase-annotated-proteins">6.1 is it random (histidine kinase annotated proteins)?</h2>
 <p>Possible histidine kinase annotated proteins (genome wide)</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb38"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb38-1"><a href="#cb38-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb38-2"><a href="#cb38-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 15 × 2
    locus_tag   product                                          
@@ -589,12 +725,12 @@ my_tier   1   2   3   4   5   6
 </div>
 <p>found in the dataset styh sites</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb40"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb40-1"><a href="#cb40-1" aria-hidden="true" tabindex="-1"></a>tcs <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb40-2"><a href="#cb40-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product)</span>
-<span id="cb40-3"><a href="#cb40-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb40-4"><a href="#cb40-4" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
-<span id="cb40-5"><a href="#cb40-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(locus_tag) <span class="sc">|&gt;</span></span>
-<span id="cb40-6"><a href="#cb40-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(tcs, <span class="at">by =</span> <span class="st">"locus_tag"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a>tcs <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag, product)</span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>styh <span class="sc">|&gt;</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">inner_join</span>(tcs, <span class="at">by =</span> <span class="st">"locus_tag"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
   locus_tag   product                                          
@@ -609,47 +745,47 @@ my_tier   1   2   3   4   5   6
 </div>
 <p>Following a test is the phosphorilisation is random or not on histidine kinase annotated proteins(Fisher Test).</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a><span class="do">##  define TCS-proteines </span></span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a>tcs <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb42-3"><a href="#cb42-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
-<span id="cb42-4"><a href="#cb42-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span>
-<span id="cb42-5"><a href="#cb42-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-6"><a href="#cb42-6" aria-hidden="true" tabindex="-1"></a><span class="do">## All proteins</span></span>
-<span id="cb42-7"><a href="#cb42-7" aria-hidden="true" tabindex="-1"></a>all_proteins <span class="ot">&lt;-</span> styh <span class="sc">|&gt;</span></span>
-<span id="cb42-8"><a href="#cb42-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
-<span id="cb42-9"><a href="#cb42-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
-<span id="cb42-10"><a href="#cb42-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb42-11"><a href="#cb42-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">TCS =</span> locus_tag <span class="sc">%in%</span> tcs<span class="sc">$</span>locus_tag</span>
-<span id="cb42-12"><a href="#cb42-12" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb42-13"><a href="#cb42-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-14"><a href="#cb42-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Proteines with at least one pHis</span></span>
-<span id="cb42-15"><a href="#cb42-15" aria-hidden="true" tabindex="-1"></a>his_proteins <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
-<span id="cb42-16"><a href="#cb42-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
-<span id="cb42-17"><a href="#cb42-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
-<span id="cb42-18"><a href="#cb42-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">has_pHis =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb42-19"><a href="#cb42-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-20"><a href="#cb42-20" aria-hidden="true" tabindex="-1"></a><span class="do">## put together</span></span>
-<span id="cb42-21"><a href="#cb42-21" aria-hidden="true" tabindex="-1"></a>protein_tbl <span class="ot">&lt;-</span> all_proteins <span class="sc">|&gt;</span></span>
-<span id="cb42-22"><a href="#cb42-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(his_proteins, <span class="at">by =</span> <span class="st">"locus_tag"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb42-23"><a href="#cb42-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb42-24"><a href="#cb42-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">has_pHis =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(has_pHis), <span class="cn">FALSE</span>, has_pHis)</span>
-<span id="cb42-25"><a href="#cb42-25" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb42-26"><a href="#cb42-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-27"><a href="#cb42-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 2x2-table</span></span>
-<span id="cb42-28"><a href="#cb42-28" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
-<span id="cb42-29"><a href="#cb42-29" aria-hidden="true" tabindex="-1"></a>  protein_tbl<span class="sc">$</span>TCS,</span>
-<span id="cb42-30"><a href="#cb42-30" aria-hidden="true" tabindex="-1"></a>  protein_tbl<span class="sc">$</span>has_pHis</span>
-<span id="cb42-31"><a href="#cb42-31" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb42-32"><a href="#cb42-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb42-33"><a href="#cb42-33" aria-hidden="true" tabindex="-1"></a>tab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="do">##  define TCS-proteines </span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>tcs <span class="ot">&lt;-</span> <span class="fu">find_protein</span>(<span class="st">"histidine kinase"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>()</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a><span class="do">## All proteins</span></span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>all_proteins <span class="ot">&lt;-</span> styh <span class="sc">|&gt;</span></span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">TCS =</span> locus_tag <span class="sc">%in%</span> tcs<span class="sc">$</span>locus_tag</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a><span class="do">## Proteines with at least one pHis</span></span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>his_proteins <span class="ot">&lt;-</span> his <span class="sc">|&gt;</span></span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(locus_tag) <span class="sc">|&gt;</span></span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">distinct</span>() <span class="sc">|&gt;</span></span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">has_pHis =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true" tabindex="-1"></a><span class="do">## put together</span></span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true" tabindex="-1"></a>protein_tbl <span class="ot">&lt;-</span> all_proteins <span class="sc">|&gt;</span></span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(his_proteins, <span class="at">by =</span> <span class="st">"locus_tag"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb61-23"><a href="#cb61-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb61-24"><a href="#cb61-24" aria-hidden="true" tabindex="-1"></a>    <span class="at">has_pHis =</span> <span class="fu">ifelse</span>(<span class="fu">is.na</span>(has_pHis), <span class="cn">FALSE</span>, has_pHis)</span>
+<span id="cb61-25"><a href="#cb61-25" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb61-26"><a href="#cb61-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-27"><a href="#cb61-27" aria-hidden="true" tabindex="-1"></a><span class="do">## 2x2-table</span></span>
+<span id="cb61-28"><a href="#cb61-28" aria-hidden="true" tabindex="-1"></a>tab <span class="ot">&lt;-</span> <span class="fu">table</span>(</span>
+<span id="cb61-29"><a href="#cb61-29" aria-hidden="true" tabindex="-1"></a>  protein_tbl<span class="sc">$</span>TCS,</span>
+<span id="cb61-30"><a href="#cb61-30" aria-hidden="true" tabindex="-1"></a>  protein_tbl<span class="sc">$</span>has_pHis</span>
+<span id="cb61-31"><a href="#cb61-31" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb61-32"><a href="#cb61-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-33"><a href="#cb61-33" aria-hidden="true" tabindex="-1"></a>tab</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       
         FALSE TRUE
   FALSE   793  312
   TRUE      6    0</code></pre>
 </div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb44"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Fisher Exact Test</span></span>
-<span id="cb44-2"><a href="#cb44-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb63"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="do">## Fisher Exact Test</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="fu">fisher.test</span>(tab)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Fisher's Exact Test for Count Data
@@ -665,6 +801,226 @@ odds ratio
 </div>
 </div>
 <p>Six proteins annotated as histidine kinases (TCS proteins) were identified in the dataset. None contained a detected histidine phosphosite. Consequently, the estimated odds ratio was 0. However, Fisher’s exact test did not indicate a significant association between TCS membership and the occurrence of histidine phosphosites (p = 0.193). Not really valuable because only very few histidine kinase annotated proteins detected.</p>
+<p>#6.3 Where are the phosphosites? First only the positions of the pHis on the proteins.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb65"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb65-1"><a href="#cb65-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Keep only the strongest-tier histidine sites</span></span>
+<span id="cb65-2"><a href="#cb65-2" aria-hidden="true" tabindex="-1"></a>strongest_his <span class="ot">&lt;-</span> my_tiers <span class="sc">%&gt;%</span></span>
+<span id="cb65-3"><a href="#cb65-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"1 strongest"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb65-4"><a href="#cb65-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(site_id) <span class="sc">%&gt;%</span></span>
+<span id="cb65-5"><a href="#cb65-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>()</span>
+<span id="cb65-6"><a href="#cb65-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-7"><a href="#cb65-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract only strongest-tier histidine sites and protein IDs</span></span>
+<span id="cb65-8"><a href="#cb65-8" aria-hidden="true" tabindex="-1"></a>his_sites <span class="ot">&lt;-</span> styh <span class="sc">%&gt;%</span></span>
+<span id="cb65-9"><a href="#cb65-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(strongest_his, <span class="at">by =</span> <span class="st">"site_id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb65-10"><a href="#cb65-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb65-11"><a href="#cb65-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">residue =</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(</span>
+<span id="cb65-12"><a href="#cb65-12" aria-hidden="true" tabindex="-1"></a>      site_id, <span class="st">"_[STYH](?=</span><span class="sc">\\</span><span class="st">d+$)"</span></span>
+<span id="cb65-13"><a href="#cb65-13" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-14"><a href="#cb65-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">as.numeric</span>(</span>
+<span id="cb65-15"><a href="#cb65-15" aria-hidden="true" tabindex="-1"></a>      stringr<span class="sc">::</span><span class="fu">str_extract</span>(site_id, <span class="st">"</span><span class="sc">\\</span><span class="st">d+$"</span>)</span>
+<span id="cb65-16"><a href="#cb65-16" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-17"><a href="#cb65-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">protein_Id =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(</span>
+<span id="cb65-18"><a href="#cb65-18" aria-hidden="true" tabindex="-1"></a>      site_id, <span class="st">"_</span><span class="sc">\\</span><span class="st">d+_[STYH]</span><span class="sc">\\</span><span class="st">d+$"</span></span>
+<span id="cb65-19"><a href="#cb65-19" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-20"><a href="#cb65-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">residue =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(residue, <span class="st">"^_"</span>)</span>
+<span id="cb65-21"><a href="#cb65-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb65-22"><a href="#cb65-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb65-23"><a href="#cb65-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(protein_Id, position)</span>
+<span id="cb65-24"><a href="#cb65-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-25"><a href="#cb65-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize protein IDs and retrieve protein lengths</span></span>
+<span id="cb65-26"><a href="#cb65-26" aria-hidden="true" tabindex="-1"></a>protein_lengths <span class="ot">&lt;-</span> total_prot <span class="sc">%&gt;%</span></span>
+<span id="cb65-27"><a href="#cb65-27" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb65-28"><a href="#cb65-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">protein_Id =</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(</span>
+<span id="cb65-29"><a href="#cb65-29" aria-hidden="true" tabindex="-1"></a>      protein_Id,</span>
+<span id="cb65-30"><a href="#cb65-30" aria-hidden="true" tabindex="-1"></a>      <span class="st">"lcl_CP020619</span><span class="sc">\\</span><span class="st">.1_prot_ARG</span><span class="sc">\\</span><span class="st">d+</span><span class="sc">\\</span><span class="st">.1"</span></span>
+<span id="cb65-31"><a href="#cb65-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb65-32"><a href="#cb65-32" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb65-33"><a href="#cb65-33" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(protein_Id, protein_length) <span class="sc">%&gt;%</span></span>
+<span id="cb65-34"><a href="#cb65-34" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>()</span>
+<span id="cb65-35"><a href="#cb65-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-36"><a href="#cb65-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine phosphorylation sites with protein lengths</span></span>
+<span id="cb65-37"><a href="#cb65-37" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> his_sites <span class="sc">%&gt;%</span></span>
+<span id="cb65-38"><a href="#cb65-38" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(protein_lengths, <span class="at">by =</span> <span class="st">"protein_Id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb65-39"><a href="#cb65-39" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(protein_length))</span>
+<span id="cb65-40"><a href="#cb65-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-41"><a href="#cb65-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot protein lengths and strongest-tier phosphorylation positions</span></span>
+<span id="cb65-42"><a href="#cb65-42" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(</span>
+<span id="cb65-43"><a href="#cb65-43" aria-hidden="true" tabindex="-1"></a>  plot_data,</span>
+<span id="cb65-44"><a href="#cb65-44" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">factor</span>(protein_Id))</span>
+<span id="cb65-45"><a href="#cb65-45" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb65-46"><a href="#cb65-46" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
+<span id="cb65-47"><a href="#cb65-47" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-48"><a href="#cb65-48" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="dv">1</span>,</span>
+<span id="cb65-49"><a href="#cb65-49" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> protein_length,</span>
+<span id="cb65-50"><a href="#cb65-50" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">factor</span>(protein_Id)</span>
+<span id="cb65-51"><a href="#cb65-51" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-52"><a href="#cb65-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">3</span>,</span>
+<span id="cb65-53"><a href="#cb65-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span></span>
+<span id="cb65-54"><a href="#cb65-54" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-55"><a href="#cb65-55" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(</span>
+<span id="cb65-56"><a href="#cb65-56" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-57"><a href="#cb65-57" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> protein_length,</span>
+<span id="cb65-58"><a href="#cb65-58" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> protein_length</span>
+<span id="cb65-59"><a href="#cb65-59" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-60"><a href="#cb65-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.3</span>,</span>
+<span id="cb65-61"><a href="#cb65-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb65-62"><a href="#cb65-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb65-63"><a href="#cb65-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-64"><a href="#cb65-64" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(</span>
+<span id="cb65-65"><a href="#cb65-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> ggplot2<span class="sc">::</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="fl">0.02</span>, <span class="fl">0.12</span>))</span>
+<span id="cb65-66"><a href="#cb65-66" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-67"><a href="#cb65-67" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
+<span id="cb65-68"><a href="#cb65-68" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-69"><a href="#cb65-69" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> position,</span>
+<span id="cb65-70"><a href="#cb65-70" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> position,</span>
+<span id="cb65-71"><a href="#cb65-71" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">-</span> <span class="fl">0.08</span>,</span>
+<span id="cb65-72"><a href="#cb65-72" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">+</span> <span class="fl">0.08</span></span>
+<span id="cb65-73"><a href="#cb65-73" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-74"><a href="#cb65-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb65-75"><a href="#cb65-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.8</span></span>
+<span id="cb65-76"><a href="#cb65-76" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-77"><a href="#cb65-77" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(</span>
+<span id="cb65-78"><a href="#cb65-78" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-79"><a href="#cb65-79" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> position,</span>
+<span id="cb65-80"><a href="#cb65-80" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">+</span> <span class="fl">0.18</span>,</span>
+<span id="cb65-81"><a href="#cb65-81" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"H"</span>, position)</span>
+<span id="cb65-82"><a href="#cb65-82" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-83"><a href="#cb65-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb65-84"><a href="#cb65-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb65-85"><a href="#cb65-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="dv">0</span></span>
+<span id="cb65-86"><a href="#cb65-86" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-87"><a href="#cb65-87" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb65-88"><a href="#cb65-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Strongest-tier histidine phosphorylation sites"</span>,</span>
+<span id="cb65-89"><a href="#cb65-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Amino acid position"</span>,</span>
+<span id="cb65-90"><a href="#cb65-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Protein ID"</span></span>
+<span id="cb65-91"><a href="#cb65-91" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-92"><a href="#cb65-92" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="histidine_phosphoRicaCamilla_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Now all phosphosites on these 5 proteins.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the 5 proteins from the strongest-tier histidine sites</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>strongest_his <span class="ot">&lt;-</span> my_tiers <span class="sc">%&gt;%</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(tier <span class="sc">==</span> <span class="st">"1 strongest"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(site_id) <span class="sc">%&gt;%</span></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>()</span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract the 5 protein IDs</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a>selected_proteins <span class="ot">&lt;-</span> strongest_his <span class="sc">%&gt;%</span></span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">protein_Id =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(</span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>      site_id, <span class="st">"_</span><span class="sc">\\</span><span class="st">d+_[STYH]</span><span class="sc">\\</span><span class="st">d+$"</span></span>
+<span id="cb66-12"><a href="#cb66-12" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb66-13"><a href="#cb66-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb66-14"><a href="#cb66-14" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(protein_Id)</span>
+<span id="cb66-15"><a href="#cb66-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-16"><a href="#cb66-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Extract ALL STYH phosphorylation sites on these 5 proteins</span></span>
+<span id="cb66-17"><a href="#cb66-17" aria-hidden="true" tabindex="-1"></a>all_sites <span class="ot">&lt;-</span> styh <span class="sc">%&gt;%</span></span>
+<span id="cb66-18"><a href="#cb66-18" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb66-19"><a href="#cb66-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">residue =</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(</span>
+<span id="cb66-20"><a href="#cb66-20" aria-hidden="true" tabindex="-1"></a>      site_id, <span class="st">"_[STYH](?=</span><span class="sc">\\</span><span class="st">d+$)"</span></span>
+<span id="cb66-21"><a href="#cb66-21" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb66-22"><a href="#cb66-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">position =</span> <span class="fu">as.numeric</span>(</span>
+<span id="cb66-23"><a href="#cb66-23" aria-hidden="true" tabindex="-1"></a>      stringr<span class="sc">::</span><span class="fu">str_extract</span>(site_id, <span class="st">"</span><span class="sc">\\</span><span class="st">d+$"</span>)</span>
+<span id="cb66-24"><a href="#cb66-24" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb66-25"><a href="#cb66-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">protein_Id =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(</span>
+<span id="cb66-26"><a href="#cb66-26" aria-hidden="true" tabindex="-1"></a>      site_id, <span class="st">"_</span><span class="sc">\\</span><span class="st">d+_[STYH]</span><span class="sc">\\</span><span class="st">d+$"</span></span>
+<span id="cb66-27"><a href="#cb66-27" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb66-28"><a href="#cb66-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">residue =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(residue, <span class="st">"^_"</span>)</span>
+<span id="cb66-29"><a href="#cb66-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb66-30"><a href="#cb66-30" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(residue <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"S"</span>, <span class="st">"T"</span>, <span class="st">"Y"</span>, <span class="st">"H"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb66-31"><a href="#cb66-31" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">semi_join</span>(selected_proteins, <span class="at">by =</span> <span class="st">"protein_Id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-32"><a href="#cb66-32" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(protein_Id, position, residue)</span>
+<span id="cb66-33"><a href="#cb66-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-34"><a href="#cb66-34" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize protein IDs and retrieve protein lengths</span></span>
+<span id="cb66-35"><a href="#cb66-35" aria-hidden="true" tabindex="-1"></a>protein_lengths <span class="ot">&lt;-</span> total_prot <span class="sc">%&gt;%</span></span>
+<span id="cb66-36"><a href="#cb66-36" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb66-37"><a href="#cb66-37" aria-hidden="true" tabindex="-1"></a>    <span class="at">protein_Id =</span> stringr<span class="sc">::</span><span class="fu">str_extract</span>(</span>
+<span id="cb66-38"><a href="#cb66-38" aria-hidden="true" tabindex="-1"></a>      protein_Id,</span>
+<span id="cb66-39"><a href="#cb66-39" aria-hidden="true" tabindex="-1"></a>      <span class="st">"lcl_CP020619</span><span class="sc">\\</span><span class="st">.1_prot_ARG</span><span class="sc">\\</span><span class="st">d+</span><span class="sc">\\</span><span class="st">.1"</span></span>
+<span id="cb66-40"><a href="#cb66-40" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb66-41"><a href="#cb66-41" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb66-42"><a href="#cb66-42" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(protein_Id, protein_length) <span class="sc">%&gt;%</span></span>
+<span id="cb66-43"><a href="#cb66-43" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>()</span>
+<span id="cb66-44"><a href="#cb66-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-45"><a href="#cb66-45" aria-hidden="true" tabindex="-1"></a><span class="co"># Combine phosphorylation sites with protein lengths</span></span>
+<span id="cb66-46"><a href="#cb66-46" aria-hidden="true" tabindex="-1"></a>plot_data <span class="ot">&lt;-</span> all_sites <span class="sc">%&gt;%</span></span>
+<span id="cb66-47"><a href="#cb66-47" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(protein_lengths, <span class="at">by =</span> <span class="st">"protein_Id"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb66-48"><a href="#cb66-48" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(protein_length))</span>
+<span id="cb66-49"><a href="#cb66-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-50"><a href="#cb66-50" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot all phosphorylation sites on the 5 selected proteins</span></span>
+<span id="cb66-51"><a href="#cb66-51" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(</span>
+<span id="cb66-52"><a href="#cb66-52" aria-hidden="true" tabindex="-1"></a>  plot_data,</span>
+<span id="cb66-53"><a href="#cb66-53" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">factor</span>(protein_Id))</span>
+<span id="cb66-54"><a href="#cb66-54" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb66-55"><a href="#cb66-55" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
+<span id="cb66-56"><a href="#cb66-56" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb66-57"><a href="#cb66-57" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="dv">1</span>,</span>
+<span id="cb66-58"><a href="#cb66-58" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> protein_length,</span>
+<span id="cb66-59"><a href="#cb66-59" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">factor</span>(protein_Id)</span>
+<span id="cb66-60"><a href="#cb66-60" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb66-61"><a href="#cb66-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">3</span>,</span>
+<span id="cb66-62"><a href="#cb66-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span></span>
+<span id="cb66-63"><a href="#cb66-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb66-64"><a href="#cb66-64" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(</span>
+<span id="cb66-65"><a href="#cb66-65" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb66-66"><a href="#cb66-66" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> protein_length,</span>
+<span id="cb66-67"><a href="#cb66-67" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> protein_length</span>
+<span id="cb66-68"><a href="#cb66-68" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb66-69"><a href="#cb66-69" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.3</span>,</span>
+<span id="cb66-70"><a href="#cb66-70" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb66-71"><a href="#cb66-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb66-72"><a href="#cb66-72" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb66-73"><a href="#cb66-73" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(</span>
+<span id="cb66-74"><a href="#cb66-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> ggplot2<span class="sc">::</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="fl">0.02</span>, <span class="fl">0.12</span>))</span>
+<span id="cb66-75"><a href="#cb66-75" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb66-76"><a href="#cb66-76" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
+<span id="cb66-77"><a href="#cb66-77" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb66-78"><a href="#cb66-78" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> position,</span>
+<span id="cb66-79"><a href="#cb66-79" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> position,</span>
+<span id="cb66-80"><a href="#cb66-80" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">-</span> <span class="fl">0.08</span>,</span>
+<span id="cb66-81"><a href="#cb66-81" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">+</span> <span class="fl">0.08</span></span>
+<span id="cb66-82"><a href="#cb66-82" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb66-83"><a href="#cb66-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb66-84"><a href="#cb66-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.8</span></span>
+<span id="cb66-85"><a href="#cb66-85" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb66-86"><a href="#cb66-86" aria-hidden="true" tabindex="-1"></a>  ggrepel<span class="sc">::</span><span class="fu">geom_text_repel</span>(</span>
+<span id="cb66-87"><a href="#cb66-87" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb66-88"><a href="#cb66-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> position,</span>
+<span id="cb66-89"><a href="#cb66-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)),</span>
+<span id="cb66-90"><a href="#cb66-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">label =</span> <span class="fu">paste0</span>(residue, position)</span>
+<span id="cb66-91"><a href="#cb66-91" aria-hidden="true" tabindex="-1"></a>  ),</span>
+<span id="cb66-92"><a href="#cb66-92" aria-hidden="true" tabindex="-1"></a>  <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb66-93"><a href="#cb66-93" aria-hidden="true" tabindex="-1"></a>  <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb66-94"><a href="#cb66-94" aria-hidden="true" tabindex="-1"></a>  <span class="at">direction =</span> <span class="st">"y"</span>,</span>
+<span id="cb66-95"><a href="#cb66-95" aria-hidden="true" tabindex="-1"></a>  <span class="at">nudge_y =</span> <span class="fl">0.3</span>,</span>
+<span id="cb66-96"><a href="#cb66-96" aria-hidden="true" tabindex="-1"></a>  <span class="at">segment.colour =</span> <span class="st">"grey50"</span>,</span>
+<span id="cb66-97"><a href="#cb66-97" aria-hidden="true" tabindex="-1"></a>  <span class="at">segment.size =</span> <span class="fl">0.3</span>,</span>
+<span id="cb66-98"><a href="#cb66-98" aria-hidden="true" tabindex="-1"></a>  <span class="at">min.segment.length =</span> <span class="dv">0</span>,</span>
+<span id="cb66-99"><a href="#cb66-99" aria-hidden="true" tabindex="-1"></a>  <span class="at">box.padding =</span> <span class="fl">0.3</span>,</span>
+<span id="cb66-100"><a href="#cb66-100" aria-hidden="true" tabindex="-1"></a>  <span class="at">point.padding =</span> <span class="fl">0.2</span>,</span>
+<span id="cb66-101"><a href="#cb66-101" aria-hidden="true" tabindex="-1"></a>  <span class="at">max.overlaps =</span> <span class="cn">Inf</span></span>
+<span id="cb66-102"><a href="#cb66-102" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb66-103"><a href="#cb66-103" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb66-104"><a href="#cb66-104" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"All phosphorylation sites on the 5 selected proteins"</span>,</span>
+<span id="cb66-105"><a href="#cb66-105" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Amino acid position"</span>,</span>
+<span id="cb66-106"><a href="#cb66-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Protein ID"</span></span>
+<span id="cb66-107"><a href="#cb66-107" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb66-108"><a href="#cb66-108" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="histidine_phosphoRicaCamilla_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="real-or-artefact-a-decision-framework" class="level2">
 <h2 class="anchored" data-anchor-id="real-or-artefact-a-decision-framework">7. Real or artefact? A decision framework</h2>
@@ -679,7 +1035,7 @@ odds ratio
 </ol>
 <p><strong>Discussion:</strong> after this analysis, how would you phrase our evidence for (or against) the claim of Prust <em>et al.</em>? Distinguish “we found no evidence” from “we found evidence of absence”.</p>
 <div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb46"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb67"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a><span class="fu">sessionInfo</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>R version 4.5.2 (2025-10-31 ucrt)
 Platform: x86_64-w64-mingw32/x64
@@ -700,20 +1056,22 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggplot2_4.0.2 stringr_1.6.0 readr_2.2.0   tidyr_1.3.2   dplyr_1.2.0  
+[1] readr_2.2.0   tidyr_1.3.2   here_1.0.2    readxl_1.4.5  stringr_1.6.0
+[6] dplyr_1.2.0   ggrepel_0.9.8 ggplot2_4.0.2
 
 loaded via a namespace (and not attached):
  [1] bit_4.6.0          gtable_0.3.6       jsonlite_2.0.0     crayon_1.5.3      
- [5] compiler_4.5.2     tidyselect_1.2.1   parallel_4.5.2     scales_1.4.0      
- [9] yaml_2.3.12        fastmap_1.2.0      R6_2.6.1           labeling_0.4.3    
-[13] generics_0.1.4     knitr_1.51         tibble_3.3.1       pillar_1.11.1     
-[17] RColorBrewer_1.1-3 tzdb_0.5.0         rlang_1.1.7        utf8_1.2.6        
-[21] stringi_1.8.7      xfun_0.56          S7_0.2.1           bit64_4.6.0-1     
-[25] cli_3.6.5          withr_3.0.2        magrittr_2.0.4     digest_0.6.39     
-[29] grid_4.5.2         vroom_1.7.0        rstudioapi_0.18.0  hms_1.1.4         
-[33] lifecycle_1.0.5    vctrs_0.7.1        evaluate_1.0.5     glue_1.8.0        
-[37] farver_2.1.2       rmarkdown_2.30     purrr_1.2.1        tools_4.5.2       
-[41] pkgconfig_2.0.3    htmltools_0.5.9   </code></pre>
+ [5] compiler_4.5.2     tidyselect_1.2.1   Rcpp_1.1.2         parallel_4.5.2    
+ [9] scales_1.4.0       yaml_2.3.12        fastmap_1.2.0      R6_2.6.1          
+[13] labeling_0.4.3     generics_0.1.4     knitr_1.51         tibble_3.3.1      
+[17] rprojroot_2.1.1    tzdb_0.5.0         pillar_1.11.1      RColorBrewer_1.1-3
+[21] rlang_1.1.7        utf8_1.2.6         stringi_1.8.7      xfun_0.56         
+[25] S7_0.2.1           bit64_4.6.0-1      cli_3.6.5          withr_3.0.2       
+[29] magrittr_2.0.4     digest_0.6.39      grid_4.5.2         vroom_1.7.0       
+[33] rstudioapi_0.18.0  hms_1.1.4          lifecycle_1.0.5    vctrs_0.7.1       
+[37] evaluate_1.0.5     glue_1.8.0         farver_2.1.2       cellranger_1.1.0  
+[41] purrr_1.2.1        rmarkdown_2.30     tools_4.5.2        pkgconfig_2.0.3   
+[45] htmltools_0.5.9   </code></pre>
 </div>
 </div>
 </section>
