@@ -453,9 +453,9 @@ strongest_his <- my_tiers %>%
   dplyr::select(site_id) %>%
   dplyr::distinct()
 
-# Extract histidine sites and protein IDs
+# Extract only strongest-tier histidine sites and protein IDs
 his_sites <- styh %>%
-  dplyr::semi_join(strongest_his, by = "site_id") %>%
+  dplyr::inner_join(strongest_his, by = "site_id") %>%
   dplyr::mutate(
     residue = stringr::str_extract(
       site_id, "_[STYH](?=\\d+$)"
@@ -487,7 +487,7 @@ plot_data <- his_sites %>%
   dplyr::inner_join(protein_lengths, by = "protein_Id") %>%
   dplyr::filter(!is.na(protein_length))
 
-# Plot protein lengths and phosphorylation positions
+# Plot protein lengths and strongest-tier phosphorylation positions
 ggplot2::ggplot(
   plot_data,
   ggplot2::aes(y = factor(protein_Id))
@@ -499,21 +499,21 @@ ggplot2::ggplot(
       yend = factor(protein_Id)
     ),
     linewidth = 3,
-    colour = "grey75"
+    colour = "black"
   ) +
-    ggplot2::geom_text(
+  ggplot2::geom_text(
     ggplot2::aes(
       x = protein_length,
       label = protein_length
     ),
     hjust = -0.3,
-    colour = "grey40",
+    colour = "black",
     size = 3
   ) +
-    ggplot2::scale_x_continuous(
+  ggplot2::scale_x_continuous(
     expand = ggplot2::expansion(mult = c(0.02, 0.12))
   ) +
-   ggplot2::geom_segment(
+  ggplot2::geom_segment(
     ggplot2::aes(
       x = position,
       xend = position,
@@ -523,7 +523,7 @@ ggplot2::ggplot(
     colour = "darkred",
     linewidth = 0.8
   ) +
-    ggplot2::geom_text(
+  ggplot2::geom_text(
     ggplot2::aes(
       x = position,
       y = as.numeric(factor(protein_Id)) + 0.18,
@@ -539,6 +539,7 @@ ggplot2::ggplot(
     y = "Protein ID"
   ) +
   ggplot2::theme_classic()
+
 
 
 ```
@@ -609,7 +610,7 @@ ggplot2::ggplot(
       yend = factor(protein_Id)
     ),
     linewidth = 3,
-    colour = "grey75"
+    colour = "black"
   ) +
   ggplot2::geom_text(
     ggplot2::aes(
@@ -617,7 +618,7 @@ ggplot2::ggplot(
       label = protein_length
     ),
     hjust = -0.3,
-    colour = "grey40",
+    colour = "black",
     size = 3
   ) +
   ggplot2::scale_x_continuous(
