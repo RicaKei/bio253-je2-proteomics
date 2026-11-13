@@ -25,11 +25,29 @@ The raw files were searched twice:
 We therefore treat pHis **very conservatively**. You will build evidence tiers yourself.
 :::
 
+
 ```{r setup}
+library(dplyr)
+library(stringr)
+library(ggplot2)
+library(readxl)
+library(here)
 source("../R/setup.R")
 # keep contaminants here: we want the complete peptide lists of both searches
 styh <- read_sites("STYH", drop_contaminants = FALSE)
 sty  <- read_sites("STY",  drop_contaminants = FALSE)
+total_prot <- readxl::read_xlsx(
+  here::here("data/raw/total", "DE_total.xlsx"),
+  sheet = "normalized_abundances",
+  col_types = "text"
+) %>%
+  dplyr::select(protein_Id, protein_length) %>%
+  dplyr::distinct() %>%
+  dplyr::mutate(
+    protein_length = as.numeric(protein_length)
+  )
+head(total_prot)
+summary(total_prot$protein_length)
 ```
 
 ## 1. How many sites per residue in the two searches?
@@ -213,6 +231,44 @@ his |>
   filter(str_detect(product, regex(canonical_pattern, ignore_case = TRUE))) |>
   select(locus_tag, product, site_id, peptide, best_loc_prob, n_sty_acceptors,
          seen_in_STY_search, max_reps_in_group)
+
+
+## Define canonical phosphotransfer proteins
+canonical_proteins <- find_protein(canonical_pattern) |>
+  select(locus_tag) |>
+  distinct()
+
+## All proteins detected in the STYH search
+all_proteins <- styh |>
+  distinct(locus_tag)
+
+## Identify canonical proteins
+protein_tbl <- all_proteins |>
+  mutate(
+    canonical = locus_tag %in% canonical_proteins$locus_tag
+  )
+
+## Identify proteins with at least one pHis site
+his_proteins <- his |>
+  distinct(locus_tag) |>
+  mutate(has_pHis = TRUE)
+
+## Combine both datasets
+protein_tbl <- protein_tbl |>
+  left_join(his_proteins, by = "locus_tag") |>
+  mutate(
+    has_pHis = ifelse(is.na(has_pHis), FALSE, has_pHis)
+  )
+
+## Construct contingency table
+tab <- table(
+  factor(protein_tbl$canonical, levels = c(TRUE, FALSE)),
+  factor(protein_tbl$has_pHis, levels = c(TRUE, FALSE)))
+rownames(tab) <- c("Canonical", "Other proteins")
+colnames(tab) <- c("pHis detected", "No pHis detected")
+tab
+## Fisher's exact test
+fisher.test(tab, alternative = "greater")
 ```
 
 **Question:** Do any histidine kinases show a His site? Is the site at the
@@ -385,6 +441,103 @@ histidine phosphosite. Consequently, the estimated odds ratio was 0. However, Fi
 significant association between TCS membership and the occurrence of histidine phosphosites (p = 0.193). Not really valuable
 because only very few histidine kinase annotated proteins detected.
 
+#6.3 Where are the phosphosites?
+First only the positions of the pHis on the proteins.
+```{r}
+
+# Keep only the strongest-tier histidine sites
+strongest_his <- my_tiers %>%
+  dplyr::filter(tier == "1 strongest") %>%
+  dplyr::select(site_id) %>%
+  dplyr::distinct()
+
+# Extract histidine sites and protein IDs
+his_sites <- styh %>%
+  dplyr::semi_join(strongest_his, by = "site_id") %>%
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    position = as.numeric(
+      stringr::str_extract(site_id, "\\d+$")
+    ),
+    protein_Id = stringr::str_remove(
+      site_id, "_\\d+_[STYH]\\d+$"
+    ),
+    residue = stringr::str_remove(residue, "^_")
+  ) %>%
+  dplyr::filter(residue == "H") %>%
+  dplyr::distinct(protein_Id, position)
+
+# Standardize protein IDs and retrieve protein lengths
+protein_lengths <- total_prot %>%
+  dplyr::mutate(
+    protein_Id = stringr::str_extract(
+      protein_Id,
+      "lcl_CP020619\\.1_prot_ARG\\d+\\.1"
+    )
+  ) %>%
+  dplyr::select(protein_Id, protein_length) %>%
+  dplyr::distinct()
+
+# Combine phosphorylation sites with protein lengths
+plot_data <- his_sites %>%
+  dplyr::inner_join(protein_lengths, by = "protein_Id") %>%
+  dplyr::filter(!is.na(protein_length))
+
+# Plot protein lengths and phosphorylation positions
+ggplot2::ggplot(
+  plot_data,
+  ggplot2::aes(y = factor(protein_Id))
+) +
+  ggplot2::geom_segment(
+    ggplot2::aes(
+      x = 1,
+      xend = protein_length,
+      yend = factor(protein_Id)
+    ),
+    linewidth = 3,
+    colour = "grey75"
+  ) +
+    ggplot2::geom_text(
+    ggplot2::aes(
+      x = protein_length,
+      label = protein_length
+    ),
+    hjust = -0.3,
+    colour = "grey40",
+    size = 3
+  ) +
+   ggplot2::geom_segment(
+    ggplot2::aes(
+      x = position,
+      xend = position,
+      y = as.numeric(factor(protein_Id)) - 0.08,
+      yend = as.numeric(factor(protein_Id)) + 0.08
+    ),
+    colour = "darkred",
+    linewidth = 1.2
+  ) +
+    ggplot2::geom_text(
+    ggplot2::aes(
+      x = position,
+      y = as.numeric(factor(protein_Id)) + 0.18,
+      label = paste0("H", position)
+    ),
+    colour = "darkred",
+    size = 3,
+    vjust = 0
+  ) +
+  ggplot2::labs(
+    title = "Strongest-tier histidine phosphorylation sites",
+    x = "Amino acid position",
+    y = "Protein ID"
+  ) +
+  ggplot2::theme_classic()
+
+
+```
+
 
 
 ## 7. Real or artefact? A decision framework
@@ -404,6 +557,8 @@ For each candidate, go through this list and write your verdict in your lab note
 **Discussion:** after this analysis, how would you phrase our evidence for (or against)
 the claim of Prust *et al.*? Distinguish "we found no evidence" from "we found evidence
 of absence".
+
+
 
 ```{r session}
 sessionInfo()
