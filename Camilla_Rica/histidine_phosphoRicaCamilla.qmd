@@ -565,6 +565,10 @@ ggplot2::ggplot(
 ```
 
 
+for the H18 it seems to be retained across many examples according to Blast. So maybe conserved in ScpA proteins. ScpA H18 is highly conserved among the homologues based on the Blast dataset when put into clustal omega.
+
+
+
 Now all phosphosites on these 5 proteins.
 
 ```{r}
