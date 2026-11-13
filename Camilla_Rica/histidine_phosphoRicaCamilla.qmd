@@ -565,7 +565,7 @@ ggplot2::ggplot(
 ```
 
 
-for the H18 it seems to be retained across many examples according to Blast. So maybe conserved in ScpA proteins. ScpA H18 is highly conserved among the homologues based on the Blast dataset when put into clustal omega.
+for the H18 it seems to be retained across many examples according to Blast. So maybe conserved in ScpA proteins. ScpA H18 is highly conserved among the homologues based on the Blast dataset when put into clustal omega. Has partially solvent accessible sidechain (alphaFold) surrounded by hydrophobic residues.
 
 
 
