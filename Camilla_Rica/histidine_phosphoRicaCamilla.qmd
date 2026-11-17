@@ -614,11 +614,15 @@ hk_site_details
 
 ```
 
-The most identified one is B7H15_11550 which has multiple phospho-sites close to each other so it might represent a multiple phosphorylated peptide region.
+The most identified one is B7H15_11550 which has multiple phospho-sites close to 
+each other so it might represent a multiple phosphorylated peptide region. Based on String it is involved in Potassium transport, ion transport and Two-component
+regulatory system.
 
 Interestingly no autophosphorilated histidine sites were detected on the kinases that were found.
 
 Our 5 Tier1 proteins are outside of the usual canonical histidine-kinase category
+
+
 
 #6.3 Where are the phosphosites on the Tier1?
 First only the positions of the pHis on the proteins.
