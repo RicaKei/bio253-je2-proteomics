@@ -825,7 +825,7 @@ odds ratio
 <span id="cb65-20"><a href="#cb65-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">residue =</span> stringr<span class="sc">::</span><span class="fu">str_remove</span>(residue, <span class="st">"^_"</span>)</span>
 <span id="cb65-21"><a href="#cb65-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
 <span id="cb65-22"><a href="#cb65-22" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(residue <span class="sc">==</span> <span class="st">"H"</span>) <span class="sc">%&gt;%</span></span>
-<span id="cb65-23"><a href="#cb65-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(protein_Id, position)</span>
+<span id="cb65-23"><a href="#cb65-23" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">distinct</span>(protein_Id, position, peptide)</span>
 <span id="cb65-24"><a href="#cb65-24" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb65-25"><a href="#cb65-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Standardize protein IDs and retrieve protein lengths</span></span>
 <span id="cb65-26"><a href="#cb65-26" aria-hidden="true" tabindex="-1"></a>protein_lengths <span class="ot">&lt;-</span> total_prot <span class="sc">%&gt;%</span></span>
@@ -843,58 +843,75 @@ odds ratio
 <span id="cb65-38"><a href="#cb65-38" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">inner_join</span>(protein_lengths, <span class="at">by =</span> <span class="st">"protein_Id"</span>) <span class="sc">%&gt;%</span></span>
 <span id="cb65-39"><a href="#cb65-39" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(protein_length))</span>
 <span id="cb65-40"><a href="#cb65-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb65-41"><a href="#cb65-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot protein lengths and strongest-tier phosphorylation positions</span></span>
-<span id="cb65-42"><a href="#cb65-42" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(</span>
-<span id="cb65-43"><a href="#cb65-43" aria-hidden="true" tabindex="-1"></a>  plot_data,</span>
-<span id="cb65-44"><a href="#cb65-44" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">factor</span>(protein_Id))</span>
-<span id="cb65-45"><a href="#cb65-45" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
-<span id="cb65-46"><a href="#cb65-46" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
-<span id="cb65-47"><a href="#cb65-47" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
-<span id="cb65-48"><a href="#cb65-48" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="dv">1</span>,</span>
-<span id="cb65-49"><a href="#cb65-49" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> protein_length,</span>
-<span id="cb65-50"><a href="#cb65-50" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">factor</span>(protein_Id)</span>
-<span id="cb65-51"><a href="#cb65-51" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb65-52"><a href="#cb65-52" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">3</span>,</span>
-<span id="cb65-53"><a href="#cb65-53" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span></span>
-<span id="cb65-54"><a href="#cb65-54" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb65-55"><a href="#cb65-55" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(</span>
-<span id="cb65-56"><a href="#cb65-56" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
-<span id="cb65-57"><a href="#cb65-57" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> protein_length,</span>
-<span id="cb65-58"><a href="#cb65-58" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> protein_length</span>
-<span id="cb65-59"><a href="#cb65-59" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb65-60"><a href="#cb65-60" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.3</span>,</span>
-<span id="cb65-61"><a href="#cb65-61" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span>,</span>
-<span id="cb65-62"><a href="#cb65-62" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
-<span id="cb65-63"><a href="#cb65-63" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb65-64"><a href="#cb65-64" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(</span>
-<span id="cb65-65"><a href="#cb65-65" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> ggplot2<span class="sc">::</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="fl">0.02</span>, <span class="fl">0.12</span>))</span>
-<span id="cb65-66"><a href="#cb65-66" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb65-67"><a href="#cb65-67" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
-<span id="cb65-68"><a href="#cb65-68" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
-<span id="cb65-69"><a href="#cb65-69" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> position,</span>
-<span id="cb65-70"><a href="#cb65-70" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> position,</span>
-<span id="cb65-71"><a href="#cb65-71" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">-</span> <span class="fl">0.08</span>,</span>
-<span id="cb65-72"><a href="#cb65-72" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">+</span> <span class="fl">0.08</span></span>
-<span id="cb65-73"><a href="#cb65-73" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb65-74"><a href="#cb65-74" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb65-75"><a href="#cb65-75" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.8</span></span>
-<span id="cb65-76"><a href="#cb65-76" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb65-77"><a href="#cb65-77" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(</span>
-<span id="cb65-78"><a href="#cb65-78" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
-<span id="cb65-79"><a href="#cb65-79" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> position,</span>
-<span id="cb65-80"><a href="#cb65-80" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">+</span> <span class="fl">0.18</span>,</span>
-<span id="cb65-81"><a href="#cb65-81" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"H"</span>, position)</span>
-<span id="cb65-82"><a href="#cb65-82" aria-hidden="true" tabindex="-1"></a>    ),</span>
-<span id="cb65-83"><a href="#cb65-83" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
-<span id="cb65-84"><a href="#cb65-84" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
-<span id="cb65-85"><a href="#cb65-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="dv">0</span></span>
-<span id="cb65-86"><a href="#cb65-86" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb65-87"><a href="#cb65-87" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
-<span id="cb65-88"><a href="#cb65-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Strongest-tier histidine phosphorylation sites"</span>,</span>
-<span id="cb65-89"><a href="#cb65-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Amino acid position"</span>,</span>
-<span id="cb65-90"><a href="#cb65-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Protein ID"</span></span>
-<span id="cb65-91"><a href="#cb65-91" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb65-92"><a href="#cb65-92" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb65-41"><a href="#cb65-41" aria-hidden="true" tabindex="-1"></a><span class="co"># Create labels with protein ID and peptide sequence</span></span>
+<span id="cb65-42"><a href="#cb65-42" aria-hidden="true" tabindex="-1"></a>protein_labels <span class="ot">&lt;-</span> plot_data <span class="sc">%&gt;%</span></span>
+<span id="cb65-43"><a href="#cb65-43" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">group_by</span>(protein_Id) <span class="sc">%&gt;%</span></span>
+<span id="cb65-44"><a href="#cb65-44" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb65-45"><a href="#cb65-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">peptide =</span> <span class="fu">paste</span>(<span class="fu">unique</span>(peptide), <span class="at">collapse =</span> <span class="st">"; "</span>),</span>
+<span id="cb65-46"><a href="#cb65-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb65-47"><a href="#cb65-47" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb65-48"><a href="#cb65-48" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb65-49"><a href="#cb65-49" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis_label =</span> <span class="fu">paste0</span>(protein_Id, <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>, peptide)</span>
+<span id="cb65-50"><a href="#cb65-50" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb65-51"><a href="#cb65-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb65-52"><a href="#cb65-52" aria-hidden="true" tabindex="-1"></a><span class="co"># Plot protein lengths and tier1 phosphorylation positions</span></span>
+<span id="cb65-53"><a href="#cb65-53" aria-hidden="true" tabindex="-1"></a>ggplot2<span class="sc">::</span><span class="fu">ggplot</span>(</span>
+<span id="cb65-54"><a href="#cb65-54" aria-hidden="true" tabindex="-1"></a>  plot_data,</span>
+<span id="cb65-55"><a href="#cb65-55" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">factor</span>(protein_Id))</span>
+<span id="cb65-56"><a href="#cb65-56" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb65-57"><a href="#cb65-57" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
+<span id="cb65-58"><a href="#cb65-58" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-59"><a href="#cb65-59" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> <span class="dv">1</span>,</span>
+<span id="cb65-60"><a href="#cb65-60" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> protein_length,</span>
+<span id="cb65-61"><a href="#cb65-61" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">factor</span>(protein_Id)</span>
+<span id="cb65-62"><a href="#cb65-62" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-63"><a href="#cb65-63" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="dv">3</span>,</span>
+<span id="cb65-64"><a href="#cb65-64" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span></span>
+<span id="cb65-65"><a href="#cb65-65" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-66"><a href="#cb65-66" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(</span>
+<span id="cb65-67"><a href="#cb65-67" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-68"><a href="#cb65-68" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> protein_length,</span>
+<span id="cb65-69"><a href="#cb65-69" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> protein_length</span>
+<span id="cb65-70"><a href="#cb65-70" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-71"><a href="#cb65-71" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.3</span>,</span>
+<span id="cb65-72"><a href="#cb65-72" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"black"</span>,</span>
+<span id="cb65-73"><a href="#cb65-73" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span></span>
+<span id="cb65-74"><a href="#cb65-74" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-75"><a href="#cb65-75" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_x_continuous</span>(</span>
+<span id="cb65-76"><a href="#cb65-76" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> ggplot2<span class="sc">::</span><span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="fl">0.02</span>, <span class="fl">0.12</span>))</span>
+<span id="cb65-77"><a href="#cb65-77" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-78"><a href="#cb65-78" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_segment</span>(</span>
+<span id="cb65-79"><a href="#cb65-79" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-80"><a href="#cb65-80" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> position,</span>
+<span id="cb65-81"><a href="#cb65-81" aria-hidden="true" tabindex="-1"></a>      <span class="at">xend =</span> position,</span>
+<span id="cb65-82"><a href="#cb65-82" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">-</span> <span class="fl">0.08</span>,</span>
+<span id="cb65-83"><a href="#cb65-83" aria-hidden="true" tabindex="-1"></a>      <span class="at">yend =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">+</span> <span class="fl">0.08</span></span>
+<span id="cb65-84"><a href="#cb65-84" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-85"><a href="#cb65-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb65-86"><a href="#cb65-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">linewidth =</span> <span class="fl">0.8</span></span>
+<span id="cb65-87"><a href="#cb65-87" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-88"><a href="#cb65-88" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">geom_text</span>(</span>
+<span id="cb65-89"><a href="#cb65-89" aria-hidden="true" tabindex="-1"></a>    ggplot2<span class="sc">::</span><span class="fu">aes</span>(</span>
+<span id="cb65-90"><a href="#cb65-90" aria-hidden="true" tabindex="-1"></a>      <span class="at">x =</span> position,</span>
+<span id="cb65-91"><a href="#cb65-91" aria-hidden="true" tabindex="-1"></a>      <span class="at">y =</span> <span class="fu">as.numeric</span>(<span class="fu">factor</span>(protein_Id)) <span class="sc">+</span> <span class="fl">0.18</span>,</span>
+<span id="cb65-92"><a href="#cb65-92" aria-hidden="true" tabindex="-1"></a>      <span class="at">label =</span> <span class="fu">paste0</span>(<span class="st">"H"</span>, position)</span>
+<span id="cb65-93"><a href="#cb65-93" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb65-94"><a href="#cb65-94" aria-hidden="true" tabindex="-1"></a>    <span class="at">colour =</span> <span class="st">"darkred"</span>,</span>
+<span id="cb65-95"><a href="#cb65-95" aria-hidden="true" tabindex="-1"></a>    <span class="at">size =</span> <span class="dv">3</span>,</span>
+<span id="cb65-96"><a href="#cb65-96" aria-hidden="true" tabindex="-1"></a>    <span class="at">vjust =</span> <span class="dv">0</span></span>
+<span id="cb65-97"><a href="#cb65-97" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-98"><a href="#cb65-98" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">scale_y_discrete</span>(</span>
+<span id="cb65-99"><a href="#cb65-99" aria-hidden="true" tabindex="-1"></a>    <span class="at">labels =</span> stats<span class="sc">::</span><span class="fu">setNames</span>(</span>
+<span id="cb65-100"><a href="#cb65-100" aria-hidden="true" tabindex="-1"></a>      protein_labels<span class="sc">$</span>axis_label,</span>
+<span id="cb65-101"><a href="#cb65-101" aria-hidden="true" tabindex="-1"></a>      protein_labels<span class="sc">$</span>protein_Id</span>
+<span id="cb65-102"><a href="#cb65-102" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb65-103"><a href="#cb65-103" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-104"><a href="#cb65-104" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">labs</span>(</span>
+<span id="cb65-105"><a href="#cb65-105" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Strongest-tier histidine phosphorylation sites"</span>,</span>
+<span id="cb65-106"><a href="#cb65-106" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Amino acid position"</span>,</span>
+<span id="cb65-107"><a href="#cb65-107" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Protein ID / peptide sequence"</span></span>
+<span id="cb65-108"><a href="#cb65-108" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb65-109"><a href="#cb65-109" aria-hidden="true" tabindex="-1"></a>  ggplot2<span class="sc">::</span><span class="fu">theme_classic</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output-display">
 <div>
 <figure class="figure">
@@ -903,6 +920,7 @@ odds ratio
 </div>
 </div>
 </div>
+<p>for the H18 it seems to be retained across many examples according to Blast. So maybe conserved in ScpA proteins. ScpA H18 is highly conserved among the homologues based on the Blast dataset when put into clustal omega. Has partially solvent accessible sidechain (alphaFold) surrounded by hydrophobic residues.</p>
 <p>Now all phosphosites on these 5 proteins.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb66"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Identify the 5 proteins from the strongest-tier histidine sites</span></span>
