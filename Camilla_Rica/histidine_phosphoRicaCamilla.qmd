@@ -837,7 +837,87 @@ response_regulator_sites <- styh |>
 response_regulator_sites
 ```
 
-Two histidine phosphorylation candidates were found in proteins annotated as DNA-binding response regulators. The site H128 in B7H15_11300 had a localization probability of 0.7882, whereas H124 in B7H15_03935 had a probability of 0.3258. Both sites were detected with positive intensity in just one sample from the anc_SN group and were not detected in the other sample groups. -> Neither candidate showed sufficient reproducibility to be considered a high-confidence phosphorylation site.
+Two histidine phosphorylation candidates were found in proteins annotated as DNA-binding response regulators. The site H128 in B7H15_11300 (H128 site) had a localization probability of 0.7882, whereas H124 in B7H15_03935 had a probability of 0.3258. Both sites were detected with positive intensity in just one sample from the anc_SN group and were not detected in the other sample groups. -> Neither candidate showed sufficient reproducibility to be considered a high-confidence phosphorylation site.
+
+B7H15_11300 (String) is involved in quorum sensing, signaling and cell comunication. FDR below 0.05 (statistically enriched in Stringnetwork)
+Check how it stands against our categories for strong likelihood, that really the His is phophorylated.
+
+```{r}
+
+# Check B7H15_11300 H128 against the four Tier 1 criteria
+
+candidate_site <- "lcl_CP020619.1_prot_ARG46599.1_2192_H128"
+
+# 1. Get the histidine site and its peptide sequence
+candidate_data <- styh |>
+  dplyr::filter(site_id == candidate_site)
+
+candidate_peptide <- candidate_data |>
+  dplyr::distinct(peptide) |>
+  dplyr::pull(peptide)
+
+# 2. Check whether the peptide contains another S, T or Y
+# The lowercase h marks the candidate phosphorylated histidine.
+no_alt_acceptor <- !stringr::str_detect(
+  stringr::str_to_upper(candidate_peptide),
+  "[STY]"
+)
+
+# 3. Check the best localization probability
+best_loc_prob <- max(
+  candidate_data$best_loc_prob,
+  na.rm = TRUE
+)
+
+# 4. Check reproducibility: count positive detections per group
+group_detections <- candidate_data |>
+  dplyr::group_by(group) |>
+  dplyr::summarise(
+    n_detected = sum(intensity > 0, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+max_reps_in_group <- max(group_detections$n_detected)
+
+# 5. Check whether the same peptide was found in the STY search
+sty_peptides <- sty |>
+  dplyr::filter(!is.na(peptide)) |>
+  dplyr::mutate(
+    peptide_key = stringr::str_to_upper(peptide)
+  ) |>
+  dplyr::distinct(peptide_key)
+
+candidate_peptide_key <- stringr::str_to_upper(candidate_peptide)
+
+seen_in_STY_search <- candidate_peptide_key %in%
+  sty_peptides$peptide_key
+
+# 6. Combine all four criteria
+candidate_check <- tibble::tibble(
+  locus_tag = "B7H15_11300",
+  site_id = candidate_site,
+  peptide = candidate_peptide,
+  no_alt_acceptor = no_alt_acceptor,
+  best_loc_prob = best_loc_prob,
+  max_reps_in_group = max_reps_in_group,
+  seen_in_STY_search = seen_in_STY_search
+) |>
+  dplyr::mutate(
+    criterion_1 = no_alt_acceptor,
+    criterion_2 = best_loc_prob >= 0.75,
+    criterion_3 = max_reps_in_group >= 2,
+    criterion_4 = !seen_in_STY_search,
+    passes_all = criterion_1 &
+      criterion_2 &
+      criterion_3 &
+      criterion_4
+  )
+
+candidate_check
+group_detections
+
+```
+It passes two of the categories (its not seen in the STY search and it has a LP >0.75). However it has a Threonine close by and also is only found once in anc_SN. 
 
 
 #6.3 Where are the phosphosites on the Tier1?
