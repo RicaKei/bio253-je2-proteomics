@@ -445,10 +445,184 @@ histidine phosphosite. Consequently, the estimated odds ratio was 0. However, Fi
 significant association between TCS membership and the occurrence of histidine phosphosites (p = 0.193). Not really valuable
 because only very few histidine kinase annotated proteins detected.
 
-#6.3 Where are the phosphosites?
-First only the positions of the pHis on the proteins.
+#6.2 more on the topic histidine kinases
+
+Staphylococcus aureus is known to have 16 two-component systems  (doi: 10.3390/genes13010034)
+
+
+
 ```{r}
 
+# ============================================================
+# Histidine phosphorylation on histidine kinases
+# Include sites regardless of localization probability
+# ============================================================
+
+# 1. Identify histidine kinase proteins by their annotation
+hk_proteins <- styh %>%
+  dplyr::filter(
+    stringr::str_detect(
+      stringr::str_to_lower(product),
+      "histidine kinase|sensor kinase|two-component.*kinase"
+    )
+  ) %>%
+  dplyr::distinct(locus_tag, product)
+
+# Inspect which histidine kinases were identified
+hk_proteins
+
+# 2. Extract histidine phosphorylation sites from these proteins
+hk_his_sites <- styh %>%
+  dplyr::filter(
+    locus_tag %in% hk_proteins$locus_tag
+  ) %>%
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    residue = stringr::str_remove(residue, "^_"),
+    position = as.numeric(
+      stringr::str_extract(site_id, "\\d+$")
+    )
+  ) %>%
+  dplyr::filter(residue == "H")
+
+# 3. Inspect all detected histidine sites on histidine kinases
+# No localization probability filter is applied
+hk_his_sites
+
+# 4. Summarise evidence for each site
+hk_his_summary <- hk_his_sites %>%
+  dplyr::group_by(
+    site_id,
+    locus_tag,
+    product,
+    peptide,
+    position
+  ) %>%
+  dplyr::summarise(
+    n_samples_quant = sum(!is.na(intensity)),
+    n_samples_lp075 = sum(
+      loc_prob_fragpipe >= 0.75,
+      na.rm = TRUE
+    ),
+    n_samples_low_lp = sum(
+      !is.na(loc_prob_fragpipe) &
+        loc_prob_fragpipe < 0.75
+    ),
+    best_loc_prob = if (
+      all(is.na(best_loc_prob))
+    ) NA_real_ else max(best_loc_prob, na.rm = TRUE),
+    max_reps_in_group = max(
+      tapply(!is.na(intensity), group, sum)
+    ),
+    .groups = "drop"
+  ) %>%
+  dplyr::arrange(
+    dplyr::desc(n_samples_quant)
+  )
+
+# 5. Display the summary
+hk_his_summary
+
+# 6. Count how many histidine kinase proteins and
+#    histidine phosphorylation sites were found
+nrow(hk_proteins)
+dplyr::n_distinct(hk_his_summary$locus_tag)
+nrow(hk_his_summary)
+
+```
+
+
+We can find 6 kinase annotations (same as in the segment 6.1) in our styh data (the rest might not have been detected). None of them were found to have any histidine-phosphorylated site(s).
+
+
+Check for any phosphorilated sites on the detected histidine kinases:
+```{r}
+
+# Check all phosphorylation sites on the six histidine kinases,
+# regardless of which amino acid is modified
+
+hk_all_sites <- styh %>%
+  dplyr::filter(
+    locus_tag %in% hk_proteins$locus_tag
+  ) %>%
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    residue = stringr::str_remove(residue, "^_"),
+    position = as.numeric(
+      stringr::str_extract(site_id, "\\d+$")
+    )
+  )
+
+# Count sites by residue type
+hk_all_sites %>%
+  dplyr::group_by(residue) %>%
+  dplyr::summarise(
+    n_sites = dplyr::n_distinct(site_id),
+    n_measurements = sum(!is.na(intensity)),
+    .groups = "drop"
+  )
+
+# List all sites, their localization probabilities and peptides
+hk_all_sites %>%
+  dplyr::distinct(
+    locus_tag,
+    product,
+    site_id,
+    residue,
+    position,
+    peptide,
+    best_loc_prob
+  ) %>%
+  dplyr::arrange(locus_tag, position)
+
+```
+
+We found multiple phosphorilations on STY sites (in total 18 distinct sites)
+
+Quick check, on which kinase are these sites located?
+
+```{r}
+
+# Summarise all phosphorylation sites on histidine kinases
+hk_site_details <- hk_all_sites %>%
+  dplyr::group_by(
+    locus_tag,
+    product,
+    residue,
+    site_id,
+    position,
+    peptide
+  ) %>%
+  dplyr::summarise(
+    best_loc_prob = if (
+      all(is.na(best_loc_prob))
+    ) NA_real_ else max(best_loc_prob, na.rm = TRUE),
+    n_samples_quant = sum(!is.na(intensity)),
+    n_samples_lp075 = sum(
+      loc_prob_fragpipe >= 0.75,
+      na.rm = TRUE
+    ),
+    .groups = "drop"
+  ) %>%
+  dplyr::arrange(locus_tag, residue, position)
+
+hk_site_details
+
+```
+
+The most identified one is B7H15_11550 which has multiple phospho-sites close to each other so it might represent a multiple phosphorylated peptide region.
+
+Interestingly no autophosphorilated histidine sites were detected on the kinases that were found.
+
+Our 5 Tier1 proteins are outside of the usual canonical histidine-kinase category
+
+#6.3 Where are the phosphosites on the Tier1?
+First only the positions of the pHis on the proteins.
+```{r}
 
 # Keep only the strongest-tier histidine sites
 strongest_his <- my_tiers %>%
