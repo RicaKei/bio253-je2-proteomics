@@ -809,6 +809,35 @@ tcs_low_probability <- tcs_all_sites |>
 tcs_low_probability
 ```
 
+how often in a specific group?
+```{r}
+# Summarise positive-intensity observations
+# for the two response-regulator histidine sites
+
+response_regulator_sites <- styh |>
+  dplyr::filter(
+    locus_tag %in% c("B7H15_03935", "B7H15_11300"),
+    stringr::str_detect(site_id, "_H\\d+$")
+  ) |>
+  dplyr::group_by(
+    locus_tag,
+    product,
+    site_id,
+    peptide,
+    best_loc_prob,
+    group
+  ) |>
+  dplyr::summarise(
+    n_detected = sum(intensity > 0, na.rm = TRUE),
+    total_intensity = sum(intensity, na.rm = TRUE),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(locus_tag, group)
+
+response_regulator_sites
+```
+
+Two histidine phosphorylation candidates were found in proteins annotated as DNA-binding response regulators. The site H128 in B7H15_11300 had a localization probability of 0.7882, whereas H124 in B7H15_03935 had a probability of 0.3258. Both sites were detected with positive intensity in just one sample from the anc_SN group and were not detected in the other sample groups. -> Neither candidate showed sufficient reproducibility to be considered a high-confidence phosphorylation site.
 
 
 #6.3 Where are the phosphosites on the Tier1?
