@@ -623,6 +623,193 @@ Interestingly no autophosphorilated histidine sites were detected on the kinases
 Our 5 Tier1 proteins are outside of the usual canonical histidine-kinase category
 
 
+```{r}
+# 1. Define protein annotation patterns
+
+canonical_pattern <- paste(
+  "histidine kinase",
+  "sensor kinase",
+  "phosphocarrier",
+  "PTS",
+  "phosphoenolpyruvate",
+  "response regulator",
+  "two-component",
+  "phosphorelay",
+  "receiver domain",
+  "succinate--CoA",
+  "succinyl-CoA synthetase",
+  "nucleoside-diphosphate kinase",
+  "HPr",
+  "enzyme I",
+  sep = "|"
+)
+
+# More specific pattern for TCS-associated proteins
+tcs_pattern <- paste(
+  "histidine kinase",
+  "sensor kinase",
+  "response regulator",
+  "two-component",
+  "phosphorelay",
+  "receiver domain",
+  sep = "|"
+)
+
+# 2. Identify canonical pHis proteins
+
+canonical_proteins <- find_protein(canonical_pattern) |>
+  dplyr::distinct(locus_tag, product)
+
+canonical_proteins
+
+# 3. Identify TCS-associated proteins
+
+tcs_proteins <- find_protein(tcs_pattern) |>
+  dplyr::distinct(locus_tag, product)
+
+tcs_proteins
+
+# 4. Identify which proteins were detected in STYH
+
+all_proteins <- styh |>
+  dplyr::distinct(locus_tag)
+
+canonical_detected <- canonical_proteins |>
+  dplyr::inner_join(all_proteins, by = "locus_tag")
+
+tcs_detected <- tcs_proteins |>
+  dplyr::inner_join(all_proteins, by = "locus_tag")
+
+# 5. Count annotated and detected proteins
+
+data.frame(
+  category = c("Canonical pHis proteins", "TCS-associated proteins"),
+  annotated = c(
+    nrow(canonical_proteins),
+    nrow(tcs_proteins)),
+  detected_in_STYH = c(
+    nrow(canonical_detected),
+    nrow(tcs_detected)))
+
+# 6. Check all histidine sites on canonical proteins
+
+canonical_his_sites <- styh |>
+  dplyr::filter(
+    locus_tag %in% canonical_detected$locus_tag
+  ) |>
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    residue = stringr::str_remove(residue, "^_"),
+    position = as.numeric(
+      stringr::str_extract(site_id, "\\d+$")
+    )
+  ) |>
+  dplyr::filter(residue == "H") |>
+  dplyr::group_by(
+    locus_tag, product, site_id, position, peptide
+  ) |>
+  dplyr::summarise(
+    best_loc_prob = if (all(is.na(best_loc_prob))) {
+      NA_real_
+    } else {
+      max(best_loc_prob, na.rm = TRUE)
+    },
+    n_samples_detected = sum(intensity > 0, na.rm = TRUE),
+    n_samples_lp075 = sum(
+      loc_prob_fragpipe >= 0.75, na.rm = TRUE
+    ),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(best_loc_prob)
+
+canonical_his_sites
+
+# 7. Check all histidine sites on TCS proteins
+
+tcs_his_sites <- styh |>
+  dplyr::filter(
+    locus_tag %in% tcs_detected$locus_tag
+  ) |>
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    residue = stringr::str_remove(residue, "^_"),
+    position = as.numeric(
+      stringr::str_extract(site_id, "\\d+$")
+    )
+  ) |>
+  dplyr::filter(residue == "H") |>
+  dplyr::group_by(
+    locus_tag, product, site_id, position, peptide
+  ) |>
+  dplyr::summarise(
+    best_loc_prob = if (all(is.na(best_loc_prob))) {
+      NA_real_
+    } else {
+      max(best_loc_prob, na.rm = TRUE)
+    },
+    n_samples_detected = sum(intensity > 0, na.rm = TRUE),
+    n_samples_lp075 = sum(
+      loc_prob_fragpipe >= 0.75, na.rm = TRUE
+    ),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(best_loc_prob)
+
+tcs_his_sites
+```
+
+
+If localisation probability does not matter:
+
+```{r}
+# All STYH sites on TCS-associated proteins,
+# including sites with low localization probability
+
+tcs_all_sites <- styh |>
+  dplyr::filter(
+    locus_tag %in% tcs_detected$locus_tag
+  ) |>
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    residue = stringr::str_remove(residue, "^_"),
+    position = as.numeric(
+      stringr::str_extract(site_id, "\\d+$")
+    )
+  ) |>
+  dplyr::group_by(
+    locus_tag, product, residue, site_id,
+    position, peptide
+  ) |>
+  dplyr::summarise(
+    best_loc_prob = if (all(is.na(best_loc_prob))) {
+      NA_real_
+    } else {
+      max(best_loc_prob, na.rm = TRUE)
+    },
+    n_samples_detected = sum(intensity > 0, na.rm = TRUE),
+    n_samples_lp075 = sum(
+      loc_prob_fragpipe >= 0.75, na.rm = TRUE
+    ),
+    .groups = "drop"
+  ) |>
+  dplyr::arrange(locus_tag, residue, position)
+
+# Sites with localization probability below 0.75
+tcs_low_probability <- tcs_all_sites |>
+  dplyr::filter(
+    is.na(best_loc_prob) | best_loc_prob < 0.75
+  )
+
+tcs_low_probability
+```
+
+
 
 #6.3 Where are the phosphosites on the Tier1?
 First only the positions of the pHis on the proteins.
