@@ -964,27 +964,24 @@ It passes two of the categories (its not seen in the STY search and it has a LP 
 First only the positions of the pHis on the proteins.
 ```{r}
 
+
 # Keep only the strongest-tier histidine sites
 strongest_his <- my_tiers %>%
   dplyr::filter(tier == "1 strongest") %>%
   dplyr::select(site_id) %>%
   dplyr::distinct()
 
-# Extract only strongest-tier histidine sites and protein IDs
+# Extract strongest-tier histidine sites and protein IDs
 his_sites <- styh %>%
   dplyr::inner_join(strongest_his, by = "site_id") %>%
   dplyr::mutate(
     residue = stringr::str_extract(
-      site_id, "_[STYH](?=\\d+$)"
-    ),
+      site_id, "_[STYH](?=\\d+$)"),
     position = as.numeric(
-      stringr::str_extract(site_id, "\\d+$")
-    ),
+      stringr::str_extract(site_id, "\\d+$")),
     protein_Id = stringr::str_remove(
-      site_id, "_\\d+_[STYH]\\d+$"
-    ),
-    residue = stringr::str_remove(residue, "^_")
-  ) %>%
+      site_id, "_\\d+_[STYH]\\d+$"),
+    residue = stringr::str_remove(residue, "^_")) %>%
   dplyr::filter(residue == "H") %>%
   dplyr::distinct(protein_Id, position, peptide)
 
@@ -993,86 +990,130 @@ protein_lengths <- total_prot %>%
   dplyr::mutate(
     protein_Id = stringr::str_extract(
       protein_Id,
-      "lcl_CP020619\\.1_prot_ARG\\d+\\.1"
-    )
-  ) %>%
+      "lcl_CP020619\\.1_prot_ARG\\d+\\.1")) %>%
   dplyr::select(protein_Id, protein_length) %>%
   dplyr::distinct()
+
+# Define the desired protein order
+protein_order <- c(
+  "lcl_CP020619.1_prot_ARG45065.1",
+  "lcl_CP020619.1_prot_ARG45665.1",
+  "lcl_CP020619.1_prot_ARG45823.1",
+  "lcl_CP020619.1_prot_ARG46060.1",
+  "lcl_CP020619.1_prot_ARG46318.1")
 
 # Combine phosphorylation sites with protein lengths
 plot_data <- his_sites %>%
   dplyr::inner_join(protein_lengths, by = "protein_Id") %>%
-  dplyr::filter(!is.na(protein_length))
+  dplyr::filter(!is.na(protein_length)) %>%
+  dplyr::mutate(
+    protein_Id = factor(protein_Id, levels = rev(protein_order)))
 
-# Create labels with protein ID and peptide sequence
+# Create readable protein labels
+protein_names <- c(
+  "lcl_CP020619.1_prot_ARG45065.1" =
+    "50S ribosomal protein L7/L12",
+  "lcl_CP020619.1_prot_ARG45665.1" =
+    "RsmH",
+  "lcl_CP020619.1_prot_ARG45823.1" =
+    "Homoserine dehydrogenase",
+  "lcl_CP020619.1_prot_ARG46060.1" =
+    "ScpA",
+  "lcl_CP020619.1_prot_ARG46318.1" =
+    "Peptidase")
+
 protein_labels <- plot_data %>%
   dplyr::group_by(protein_Id) %>%
   dplyr::summarise(
     peptide = paste(unique(peptide), collapse = "; "),
-    .groups = "drop"
-  ) %>%
+    .groups = "drop") %>%
   dplyr::mutate(
-    axis_label = paste0(protein_Id, "\n", peptide)
-  )
+    axis_label = paste0(
+      unname(protein_names[as.character(protein_Id)]),
+      "\n",
+      peptide))
 
-# Plot protein lengths and tier1 phosphorylation positions
+# Plot protein lengths and Tier 1 phosphorylation positions
 ggplot2::ggplot(
   plot_data,
-  ggplot2::aes(y = factor(protein_Id))
-) +
+  ggplot2::aes(y = protein_Id)) +
+  # Protein length
   ggplot2::geom_segment(
     ggplot2::aes(
       x = 1,
       xend = protein_length,
-      yend = factor(protein_Id)
-    ),
-    linewidth = 3,
-    colour = "black"
-  ) +
+      yend = protein_Id),
+    linewidth = 4,
+    colour = "black") +
+
+  # Protein length labels
   ggplot2::geom_text(
     ggplot2::aes(
       x = protein_length,
-      label = protein_length
-    ),
-    hjust = -0.3,
+      label = protein_length),
+    hjust = -0.4,
     colour = "black",
-    size = 3
-  ) +
-  ggplot2::scale_x_continuous(
-    expand = ggplot2::expansion(mult = c(0.02, 0.12))
-  ) +
+    size = 5,
+    fontface = "bold") +
+
+  # Histidine phosphorylation markers
   ggplot2::geom_segment(
     ggplot2::aes(
       x = position,
       xend = position,
-      y = as.numeric(factor(protein_Id)) - 0.08,
-      yend = as.numeric(factor(protein_Id)) + 0.08
-    ),
+      y = as.numeric(protein_Id) - 0.12,
+      yend = as.numeric(protein_Id) + 0.12),
     colour = "darkred",
-    linewidth = 0.8
-  ) +
+    linewidth = 1.5) +
+
+  # Histidine site labels
   ggplot2::geom_text(
     ggplot2::aes(
       x = position,
-      y = as.numeric(factor(protein_Id)) + 0.18,
-      label = paste0("H", position)
-    ),
+      y = as.numeric(protein_Id) + 0.22,
+      label = paste0("H", position)),
     colour = "darkred",
-    size = 3,
-    vjust = 0
-  ) +
+    size = 5,
+    fontface = "bold",
+    vjust = 0) +
+
+  # Protein labels
   ggplot2::scale_y_discrete(
     labels = stats::setNames(
       protein_labels$axis_label,
-      protein_labels$protein_Id
-    )
-  ) +
+      as.character(protein_labels$protein_Id))) +
+
+  # Axis scaling
+  ggplot2::scale_x_continuous(
+    expand = ggplot2::expansion(mult = c(0.02, 0.15))) +
+
+  # Titles
   ggplot2::labs(
     title = "Strongest-tier histidine phosphorylation sites",
     x = "Amino acid position",
-    y = "Protein ID / peptide sequence"
-  ) +
-  ggplot2::theme_classic()
+    y = "Protein / peptide sequence") +
+  ggplot2::theme_minimal(base_size = 22) +
+  ggplot2::theme(
+    panel.grid.major.x = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank(),
+    panel.grid.major.y = ggplot2::element_line(
+      colour = "grey90",
+      linewidth = 0.5),
+    plot.title = ggplot2::element_text(
+      size = 28,
+      face = "bold",
+      hjust = 0.5),
+    axis.title = ggplot2::element_text(
+      size = 24,
+      face = "bold"),
+    axis.text.x = ggplot2::element_text(
+      size = 20,
+      colour = "black"),
+    axis.text.y = ggplot2::element_text(
+      size = 17,
+      colour = "black",
+      lineheight = 1.2),
+    plot.margin = ggplot2::margin(15, 35, 15, 15))
 
 
 
