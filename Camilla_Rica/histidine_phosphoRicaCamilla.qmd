@@ -800,6 +800,119 @@ tcs_his_sites <- styh |>
   dplyr::arrange(best_loc_prob)
 
 tcs_his_sites
+
+
+
+# 8. Identify detected histidine kinases
+histidine_kinases <- tcs_detected %>%
+  dplyr::filter(
+    stringr::str_detect(
+      product,
+      stringr::regex("histidine kinase|sensor kinase", ignore_case = TRUE)
+    )
+  ) %>%
+  dplyr::distinct(locus_tag, product)
+
+# 9. Check for histidine phosphorylation sites on these kinases
+hk_his_sites <- styh %>%
+  dplyr::filter(locus_tag %in% histidine_kinases$locus_tag) %>%
+  dplyr::mutate(
+    residue = stringr::str_extract(
+      site_id, "_[STYH](?=\\d+$)"
+    ),
+    residue = stringr::str_remove(residue, "^_")
+  ) %>%
+  dplyr::filter(residue == "H") %>%
+  dplyr::distinct(locus_tag, site_id)
+
+# 10. Prepare data for plotting
+hk_plot_data <- histidine_kinases %>%
+  dplyr::left_join(
+    hk_his_sites %>%
+      dplyr::count(locus_tag, name = "n_pHis_sites"),
+    by = "locus_tag"
+  ) %>%
+  dplyr::mutate(
+    n_pHis_sites = tidyr::replace_na(n_pHis_sites, 0),
+    protein_label = paste0(product, " (", locus_tag, ")")
+  ) %>%
+  dplyr::arrange(product) %>%
+  dplyr::mutate(
+    protein_label = factor(
+      protein_label,
+      levels = rev(protein_label)
+    )
+  )
+
+# 11. Plot detected histidine kinases and their pHis sites
+ggplot2::ggplot(
+  hk_plot_data,
+  ggplot2::aes(y = protein_label)
+) +
+  ggplot2::geom_vline(
+    xintercept = 0,
+    colour = "grey80",
+    linewidth = 0.8
+  ) +
+  ggplot2::geom_point(
+    ggplot2::aes(x = n_pHis_sites),
+    colour = "darkred",
+    size = 5
+  ) +
+  ggplot2::geom_text(
+    ggplot2::aes(
+      x = 0,
+      label = n_pHis_sites
+    ),
+    colour = "darkred",
+    size = 6,
+    fontface = "bold",
+    hjust = -0.8
+  ) +
+  ggplot2::scale_x_continuous(
+    breaks = 0:5,
+    limits = c(-0.1, 1),
+    expand = ggplot2::expansion(mult = c(0, 0.05))
+  ) +
+  ggplot2::labs(
+    title = "Histidine kinases detected in the STYH dataset",
+    subtitle = "No histidine-phosphorylated sites were detected",
+    x = "Number of detected pHis sites",
+    y = NULL
+  ) +
+  ggplot2::theme_minimal(base_size = 22) +
+  ggplot2::theme(
+    panel.grid.major.x = ggplot2::element_blank(),
+    panel.grid.minor = ggplot2::element_blank(),
+    panel.grid.major.y = ggplot2::element_line(
+      colour = "grey90",
+      linewidth = 0.5
+    ),
+    plot.title = ggplot2::element_text(
+      size = 28,
+      face = "bold",
+      hjust = 0.5
+    ),
+    plot.subtitle = ggplot2::element_text(
+      size = 20,
+      hjust = 0.5
+    ),
+    axis.title.x = ggplot2::element_text(
+      size = 22,
+      face = "bold"
+    ),
+    axis.text.x = ggplot2::element_text(
+      size = 20,
+      colour = "black"
+    ),
+    axis.text.y = ggplot2::element_text(
+      size = 17,
+      colour = "black"
+    ),
+    plot.margin = ggplot2::margin(15, 30, 15, 15)
+  )
+
+
 ```
 
 
