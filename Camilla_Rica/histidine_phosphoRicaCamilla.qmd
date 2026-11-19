@@ -84,7 +84,7 @@ bind_rows(styh, sty) |>
     breaks = scales::breaks_pretty(n = 5),
     expand = expansion(mult = c(0, 0.15))) +
   labs(
-    title = "Identified phosphorylation sites by amino acid residue",
+    #title = "Identified phosphorylation sites by amino acid residue",
     x = "Amino acid residue",
     y = "Number of sites",
     fill = NULL) +
@@ -1122,29 +1122,26 @@ plot_data <- his_sites %>%
   dplyr::mutate(
     protein_Id = factor(protein_Id, levels = rev(protein_order)))
 
-# Create readable protein labels
+# readable protein labels
 protein_names <- c(
   "lcl_CP020619.1_prot_ARG45065.1" =
-    "50S ribosomal protein L7/L12",
+    "Protein (Peptide 1)",
   "lcl_CP020619.1_prot_ARG45665.1" =
-    "RsmH",
+    "Protein (Peptide 2)",
   "lcl_CP020619.1_prot_ARG45823.1" =
-    "Homoserine dehydrogenase",
+    "Protein (Peptide 3)",
   "lcl_CP020619.1_prot_ARG46060.1" =
-    "ScpA",
+    "Protein (Peptide 4)",
   "lcl_CP020619.1_prot_ARG46318.1" =
-    "Peptidase")
-
+    "Protein (Peptide 5)")
+ 
 protein_labels <- plot_data %>%
-  dplyr::group_by(protein_Id) %>%
-  dplyr::summarise(
-    peptide = paste(unique(peptide), collapse = "; "),
-    .groups = "drop") %>%
+  dplyr::distinct(protein_Id) %>%
   dplyr::mutate(
-    axis_label = paste0(
-      unname(protein_names[as.character(protein_Id)]),
-      "\n",
-      peptide))
+    axis_label = unname(
+      protein_names[as.character(protein_Id)]
+    )
+  )
 
 # Plot protein lengths and Tier 1 phosphorylation positions
 ggplot2::ggplot(
@@ -1202,9 +1199,10 @@ ggplot2::ggplot(
 
   # Titles
   ggplot2::labs(
-    title = "Strongest-tier histidine phosphorylation sites",
+    #title = "Strongest-tier histidine phosphorylation sites",
     x = "Amino acid position",
-    y = "Protein / peptide sequence") +
+    y = ""
+    ) +
   ggplot2::theme_minimal(base_size = 22) +
   ggplot2::theme(
     panel.grid.major.x = ggplot2::element_blank(),
