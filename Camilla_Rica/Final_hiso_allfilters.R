@@ -1,4 +1,4 @@
-# first idea
+# first
 #FINAL plot 
 # library(dplyr)
 # library(readr)
@@ -81,7 +81,7 @@
 
 
 
-
+#plot without tile so it is not double on the poster
 # FINAL DIAGNOSTIC PLOT: HISTIDINE PHOSPHORYLATION
 
 library(dplyr)
@@ -261,8 +261,7 @@ ggplot(filter_data, aes(x = Step, y = Count)) +
   ) +
   
   labs(
-    title = "Filtering potential histidine phosphorylation sites",
-    subtitle = "Number of sites remaining after each confidence criterion",
+    title = "",
     x = NULL,
     y = "Number of His-site candidates") +
   
